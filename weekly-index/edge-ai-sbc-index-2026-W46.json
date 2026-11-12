@@ -1,0 +1,49 @@
+{
+  "report_title": "ChipRadar Edge AI & SBC Price Index \u2014 2026-W46",
+  "week": "2026-W46",
+  "generated_at": "2026-11-11T23:03:36.473200Z",
+  "data_provenance": "price_history (7-day windowed change), vendor_comparison vs msrp_catalog (below-MSRP deals), v_api_llm_benchmarks (LLM perf/$ and perf/W leaders)",
+  "movers": {
+    "drops": [],
+    "increases": []
+  },
+  "below_msrp": [],
+  "llm_leaderboard": {
+    "~8B-class": {
+      "best_tokens_per_dollar": {
+        "device_id": "B0BZJTQ5YP",
+        "platform": "Jetson Orin Nano Super 8GB",
+        "ram_gb": 8,
+        "model_name": "Qwen2.5 7B",
+        "quantization": "INT4",
+        "tokens_per_sec": 21.75,
+        "power_watts": null,
+        "usd_price": 249.0,
+        "perf_per_dollar": 0.08735,
+        "perf_per_watt": null,
+        "source_url": "https://raw.githubusercontent.com/msmcs-robotics/WayfindR-driver/main/docs/jetson_orin_nano_llm_benchmarks.md",
+        "runtime": "MLC API"
+      },
+      "best_tokens_per_watt": null
+    }
+  },
+  "snippets": {
+    "deals_curl": "curl -H 'Authorization: Bearer $CHIPRADAR_API_KEY' https://chipradar.io/api/v1/deals",
+    "benchmarks_curl": "curl -H 'Authorization: Bearer $CHIPRADAR_API_KEY' https://chipradar.io/api/v1/benchmarks/llm",
+    "mcp_config": {
+      "mcpServers": {
+        "chipradar": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "mcp-chipradar@latest"
+          ],
+          "env": {
+            "CHIPRADAR_API_KEY": "YOUR_API_KEY_HERE"
+          }
+        }
+      }
+    }
+  },
+  "markdown": "<!-- ChipRadar Edge AI & SBC Price Index \u2014 2026-W46 -->\n<!-- Generated: 2026-11-11T23:03:36.473200Z -->\n<!-- Data provenance per figure: price_history (7-day windowed change), vendor_comparison vs msrp_catalog (below-MSRP deals), v_api_llm_benchmarks (LLM perf/$ and perf/W leaders) -->\n\n# ChipRadar Edge AI & SBC Price Index \u2014 2026-W46\n\n**Published:** 2026-11-11T23:03:36.473200Z  \n**Source of truth:** vendor-listed prices only. Amazon prices are excluded. All percentages and leaderboards are computed from the ChipRadar database.\n\n---\n\n## 1. 7-Day Price Movers\n\n_No reliable 7-day price changes found in the current database snapshot. Price-history depth is too thin to compute trailing-7-day movers._\n\n---\n\n## 2. Boards Priced Below MSRP\n\n_No vendor prices currently sit below documented MSRP. This can happen when stock is tight or MSRP records are missing._\n\n---\n\n## 3. Edge-LLM Leaderboard\n\n### ~8B-class\n\n- **Best tokens/$:** Jetson Orin Nano Super 8GB running **Qwen2.5 7B** @ 21.8 tok/s \u2014 0.0873 tok/s/$ ($249.00, MLC API).\n\n---\n\n## 4. Raw Data Snippets\n\n```bash\n# Current vendor deals (paid API tier)\ncurl -H \"Authorization: Bearer $CHIPRADAR_API_KEY\"   https://chipradar.io/api/v1/deals\n\n# Cited hardware LLM benchmarks (paid API tier)\ncurl -H \"Authorization: Bearer $CHIPRADAR_API_KEY\"   https://chipradar.io/api/v1/benchmarks/llm\n```\n\nMCP server configuration:\n\n```json\n{\n  \"mcpServers\": {\n    \"chipradar\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"mcp-chipradar@latest\"],\n      \"env\": {\"CHIPRADAR_API_KEY\": \"YOUR_API_KEY_HERE\"}\n    }\n  }\n}\n```\n\n---\n\n*This index is generated automatically from the ChipRadar database. Review before sharing.*\n"
+}
