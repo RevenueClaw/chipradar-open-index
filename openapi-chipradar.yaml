@@ -566,6 +566,236 @@ paths:
           monthly_cap: 250000
           per_minute_cap: 600
           per_call_limit: '100'
+  /api/v1/inference/health:
+    get:
+      operationId: inferenceHealth
+      summary: Inference telemetry health snapshot
+      description: |
+        Rolling 24h health and budget status for all active inference providers.
+        Available to every tier; returns `providers: []` and `status: no-data-yet`
+        when the inference tables are empty.
+      tags:
+      - v1 — inference telemetry
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Inference health snapshot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InferenceHealthResponse'
+              example:
+                success: true
+                tier: free
+                generated_at: '2026-11-11T12:00:00Z'
+                window: 24h
+                status: ok
+                budget:
+                  month: '2026-11'
+                  spent_usd: 1.23
+                  cap_usd: 5.0
+                  paused: false
+                  updated_utc: '2026-11-11T12:00:00Z'
+                providers:
+                - slug: openrouter
+                  display_name: OpenRouter
+                  uptime_24h_pct: 99.9
+                  p50_ttft_ms_24h: 110
+                  p50_gen_tok_per_sec_24h: 44
+                  err_429_pct_24h: 0.1
+                  err_5xx_pct_24h: 0.0
+                  effective_cost_per_1m_tokens: 0.2
+                  last_probe_utc: '2026-11-11T11:00:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+      x-tiers:
+        free:
+          price: $0/mo
+          monthly_cap: 100
+          per_minute_cap: 5
+        indie:
+          price: $12/mo
+          monthly_cap: 5000
+          per_minute_cap: 30
+        pro:
+          price: $49/mo
+          monthly_cap: 50000
+          per_minute_cap: 120
+        enterprise:
+          price: $199/mo
+          monthly_cap: 250000
+          per_minute_cap: 600
+  /api/v1/inference/models/{model_slug}/routes:
+    get:
+      operationId: inferenceModelRoutes
+      summary: Per-provider routes for one inference model
+      description: Returns provider routes, prices, and 7-day probe metrics for a
+        single model. Requires Indie/Builder tier or above.
+      tags:
+      - v1 — inference telemetry
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: model_slug
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Inference model slug, e.g. `llama-3-8b`.
+      responses:
+        '200':
+          description: Routes with metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InferenceRoutesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Requires Indie/Builder tier or above.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+      x-tiers:
+        free:
+          allowed: false
+          reason: Requires Indie/Builder tier or above ($12/mo).
+        indie:
+          price: $12/mo
+          monthly_cap: 5000
+          per_minute_cap: 30
+        pro:
+          price: $49/mo
+          monthly_cap: 50000
+          per_minute_cap: 120
+        enterprise:
+          price: $199/mo
+          monthly_cap: 250000
+          per_minute_cap: 600
+  /api/v1/inference/recommend:
+    get:
+      operationId: inferenceRecommend
+      summary: Recommend the best provider for a model
+      description: Ranks routes by cost, latency, or a balanced blend. Requires
+        Indie/Builder tier or above.
+      tags:
+      - v1 — inference telemetry
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: model
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Inference model slug, e.g. `llama-3-8b`.
+      - name: priority
+        in: query
+        schema:
+          type: string
+          enum:
+          - cost
+          - latency
+          - balanced
+          default: balanced
+        description: Ranking priority.
+      responses:
+        '200':
+          description: Ranked recommendations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InferenceRecommendResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Requires Indie/Builder tier or above.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+      x-tiers:
+        free:
+          allowed: false
+          reason: Requires Indie/Builder tier or above ($12/mo).
+        indie:
+          price: $12/mo
+          monthly_cap: 5000
+          per_minute_cap: 30
+        pro:
+          price: $49/mo
+          monthly_cap: 50000
+          per_minute_cap: 120
+        enterprise:
+          price: $199/mo
+          monthly_cap: 250000
+          per_minute_cap: 600
+  /api/v1/inference/breakeven:
+    get:
+      operationId: inferenceBreakeven
+      summary: Cloud-vs-local breakeven calculator
+      description: Compares 30-day cloud inference spend against the cheapest
+        in-stock board (from `vendor_comparison`, non-Amazon, ≤7 days fresh) that
+        can run the model class on-device. Requires Indie/Builder tier or above.
+      tags:
+      - v1 — inference telemetry
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: daily_tokens
+        in: query
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+        description: Expected output tokens generated per day.
+      - name: model
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Inference model slug, e.g. `llama-3-8b`.
+      responses:
+        '200':
+          description: Breakeven analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InferenceBreakevenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Requires Indie/Builder tier or above.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+      x-tiers:
+        free:
+          allowed: false
+          reason: Requires Indie/Builder tier or above ($12/mo).
+        indie:
+          price: $12/mo
+          monthly_cap: 5000
+          per_minute_cap: 30
+        pro:
+          price: $49/mo
+          monthly_cap: 50000
+          per_minute_cap: 120
+        enterprise:
+          price: $199/mo
+          monthly_cap: 250000
+          per_minute_cap: 600
   /api/v2/products:
     get:
       operationId: listProducts
@@ -1818,3 +2048,211 @@ components:
         notes:
           type: string
           nullable: true
+    UpgradeRequired:
+      type: object
+      properties:
+        success:
+          type: boolean
+        error:
+          type: string
+        min_tier:
+          type: string
+        message:
+          type: string
+        current_tier:
+          type: string
+        upgrade_url:
+          type: string
+        current_cap:
+          type: integer
+    InferenceBudget:
+      type: object
+      properties:
+        month:
+          type: string
+        spent_usd:
+          type: number
+        cap_usd:
+          type: number
+        paused:
+          type: boolean
+        updated_utc:
+          type: string
+          nullable: true
+    InferenceProviderHealth:
+      type: object
+      properties:
+        slug:
+          type: string
+        display_name:
+          type: string
+        uptime_24h_pct:
+          type: number
+        p50_ttft_ms_24h:
+          type: number
+          nullable: true
+        p50_gen_tok_per_sec_24h:
+          type: number
+          nullable: true
+        err_429_pct_24h:
+          type: number
+        err_5xx_pct_24h:
+          type: number
+        effective_cost_per_1m_tokens:
+          type: number
+          nullable: true
+        last_probe_utc:
+          type: string
+          nullable: true
+    InferenceHealthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        tier:
+          type: string
+        generated_at:
+          type: string
+        window:
+          type: string
+        status:
+          type: string
+        budget:
+          $ref: '#/components/schemas/InferenceBudget'
+        providers:
+          type: array
+          items:
+            $ref: '#/components/schemas/InferenceProviderHealth'
+    InferenceRouteMetrics:
+      type: object
+      properties:
+        success_rate_pct:
+          type: number
+          nullable: true
+        p50_ttft_ms:
+          type: number
+          nullable: true
+        p50_gen_tok_per_sec:
+          type: number
+          nullable: true
+        err_429_pct:
+          type: number
+          nullable: true
+        err_5xx_pct:
+          type: number
+          nullable: true
+        integrity_rate_pct:
+          type: number
+          nullable: true
+        effective_cost_per_1m_tokens:
+          type: number
+          nullable: true
+        last_probe_utc:
+          type: string
+          nullable: true
+    InferenceRoute:
+      type: object
+      properties:
+        provider_slug:
+          type: string
+        provider_name:
+          type: string
+        provider_model_id:
+          type: string
+        input_price_per_1m_tokens:
+          type: number
+          nullable: true
+        output_price_per_1m_tokens:
+          type: number
+          nullable: true
+        source_url:
+          type: string
+          nullable: true
+        price_verified:
+          type: boolean
+        metrics:
+          $ref: '#/components/schemas/InferenceRouteMetrics'
+    InferenceRoutesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        tier:
+          type: string
+        model_slug:
+          type: string
+        routes:
+          type: array
+          items:
+            $ref: '#/components/schemas/InferenceRoute'
+    InferenceRecommendResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        tier:
+          type: string
+        model_slug:
+          type: string
+        priority:
+          type: string
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/InferenceRoute'
+    InferenceBreakevenBoard:
+      type: object
+      properties:
+        asin:
+          type: string
+        board_price:
+          type: number
+        benchmark_model_name:
+          type: string
+        tokens_per_sec:
+          type: number
+        board_power_watts:
+          type: number
+        local_energy_cost_per_day:
+          type: number
+        cloud_cost_per_day:
+          type: number
+        net_savings_per_day:
+          type: number
+        payback_days:
+          type: number
+    InferenceBreakevenExcluded:
+      type: object
+      properties:
+        asin:
+          type: string
+        reason:
+          type: string
+        net_savings_per_day:
+          type: number
+          nullable: true
+    InferenceBreakevenResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        tier:
+          type: string
+        daily_tokens:
+          type: integer
+        model_slug:
+          type: string
+        cloud_provider_used:
+          type: string
+          nullable: true
+        cloud_cost_per_day:
+          type: number
+          nullable: true
+        boards:
+          type: array
+          items:
+            $ref: '#/components/schemas/InferenceBreakevenBoard'
+        boards_excluded:
+          type: array
+          items:
+            $ref: '#/components/schemas/InferenceBreakevenExcluded'
