@@ -20,7 +20,7 @@ info:
     \ public demo mode without an API key.\n\n**Amazon compliance:** `current_price`\
     \ for Amazon-sourced products is\nintentionally stored as `0` by design; live\
     \ market prices come from\nindependent vendors tracked in `vendor_comparison`.\n"
-  version: 1.0.0
+  version: 1.1.0
   contact:
     name: ChipRadar API Support
     url: https://chipradar.io/developers
@@ -151,6 +151,13 @@ paths:
                   cpu_arch: ARM
                   ram: 4GB
                   ram_type: LPDDR4X
+                  memory_bandwidth_gbps: 17.0
+                  derived_bandwidth_gbps: 34.1
+                  max_q4_model_b: 6.0
+                  os_support: Raspberry Pi OS, Ubuntu 24.04, Debian 12
+                  lifecycle_status: active
+                  eol_date: null
+                  spec_source_url: https://www.raspberrypi.com/documentation/
                   form_factor: credit_card
                   board_tier: free
                   current_price: 110.0
@@ -158,6 +165,10 @@ paths:
                   last_price_update: '2026-11-11T12:00:00Z'
                   best_price: 110.0
                   best_vendor: PiShop.us
+                  landed_price_usd: 110.0
+                  shipping_usd_us: 0.0
+                  psu_included: null
+                  estimated_delivery_days: null
                   vendors:
                   - vendor: PiShop.us
                     price: 110.0
@@ -361,6 +372,10 @@ paths:
                   family: raspberry_pi
                   best_price: 55.0
                   best_vendor: PiShop.us
+                  landed_price_usd: 55.0
+                  shipping_usd_us: 0.0
+                  psu_included: null
+                  estimated_delivery_days: null
                   msrp: 110.0
                   savings_pct: 50.0
                   savings_amount: 55.0
@@ -840,6 +855,7 @@ paths:
                   category: single_board_computer
                   current_price: 110.0
                   best_price: 110.0
+                  best_landed_price: 110.0
                   best_vendor: PiShop.us
                   availability: in_stock
                   last_updated: '2026-11-11T12:00:00Z'
@@ -1313,6 +1329,10 @@ paths:
                   family: raspberry_pi
                   best_price: 55.0
                   best_vendor: PiShop.us
+                  landed_price_usd: 55.0
+                  shipping_usd_us: 0.0
+                  psu_included: null
+                  estimated_delivery_days: null
                   msrp: 110.0
                   savings_pct: 50.0
                   savings_amount: 55.0

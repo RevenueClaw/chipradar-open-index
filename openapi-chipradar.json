@@ -1,3203 +1,3226 @@
 {
- "openapi": "3.1.0",
- "info": {
-  "title": "ChipRadar B2B Hardware Pricing API",
-  "description": "REST API for real-time multi-vendor single-board computer (SBC), mini-PC,\nand AI-accelerator pricing data. Endpoints are mounted under `/api/v1`\n(board-centric) and `/api/v2` (product-centric); `/api/v3` is proxied to\nthe same `/api/v2` handlers.\n\n**Authentication:** All B2B data endpoints require a Bearer API key:\n`Authorization: Bearer <api_key>`. Get a free key instantly at\nhttps://chipradar.io/api/keys.\n\n**Rate limiting \u2014 4-tier structure** (owner directive #3, 2026-11-11):\n\n| Tier (slug) | Price | Monthly cap | Per-minute cap | Key features |\n|---|---|---|---|---|\n| Sandbox (free) | $0/mo | 100 | 5 | current deals + basic specs |\n| Indie/Builder (indie) | $12/mo | 5,000 | 30 | LLM benchmarks, 90-day history, MCP access |\n| Pro/Growth (pro) | $49/mo | 50,000 | 120 | full history, restock webhooks, metered overages |\n| Enterprise/Supply Chain (enterprise) | $199/mo | 250,000+ | 600 | bulk exports, priority webhooks, custom SKU tracking |\n\nEvery B2B response includes rate-limit headers:\n`X-RateLimit-Limit`, `X-RateLimit-Remaining`,\n`X-RateLimit-Limit-Minute`, `X-RateLimit-Remaining-Minute`,\n`X-RateLimit-Window`, `X-RateLimit-Tier`.\n\n**MCP distribution:** The official MCP server lives at\nhttps://github.com/RevenueClaw/chipradar/tree/main/mcp-chipradar and runs\nin public demo mode without an API key.\n\n**Amazon compliance:** `current_price` for Amazon-sourced products is\nintentionally stored as `0` by design; live market prices come from\nindependent vendors tracked in `vendor_comparison`.\n",
-  "version": "1.0.0",
-  "contact": {
-   "name": "ChipRadar API Support",
-   "url": "https://chipradar.io/developers"
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ChipRadar B2B Hardware Pricing API",
+    "description": "REST API for real-time multi-vendor single-board computer (SBC), mini-PC,\nand AI-accelerator pricing data. Endpoints are mounted under `/api/v1`\n(board-centric) and `/api/v2` (product-centric); `/api/v3` is proxied to\nthe same `/api/v2` handlers.\n\n**Authentication:** All B2B data endpoints require a Bearer API key:\n`Authorization: Bearer <api_key>`. Get a free key instantly at\nhttps://chipradar.io/api/keys.\n\n**Rate limiting \u2014 4-tier structure** (owner directive #3, 2026-11-11):\n\n| Tier (slug) | Price | Monthly cap | Per-minute cap | Key features |\n|---|---|---|---|---|\n| Sandbox (free) | $0/mo | 100 | 5 | current deals + basic specs |\n| Indie/Builder (indie) | $12/mo | 5,000 | 30 | LLM benchmarks, 90-day history, MCP access |\n| Pro/Growth (pro) | $49/mo | 50,000 | 120 | full history, restock webhooks, metered overages |\n| Enterprise/Supply Chain (enterprise) | $199/mo | 250,000+ | 600 | bulk exports, priority webhooks, custom SKU tracking |\n\nEvery B2B response includes rate-limit headers:\n`X-RateLimit-Limit`, `X-RateLimit-Remaining`,\n`X-RateLimit-Limit-Minute`, `X-RateLimit-Remaining-Minute`,\n`X-RateLimit-Window`, `X-RateLimit-Tier`.\n\n**MCP distribution:** The official MCP server lives at\nhttps://github.com/RevenueClaw/chipradar/tree/main/mcp-chipradar and runs\nin public demo mode without an API key.\n\n**Amazon compliance:** `current_price` for Amazon-sourced products is\nintentionally stored as `0` by design; live market prices come from\nindependent vendors tracked in `vendor_comparison`.\n",
+    "version": "1.1.0",
+    "contact": {
+      "name": "ChipRadar API Support",
+      "url": "https://chipradar.io/developers"
+    },
+    "license": {
+      "name": "Apache-2.0",
+      "identifier": "Apache-2.0"
+    },
+    "x-tier-pricing": {
+      "free": {
+        "slug": "free",
+        "price": "$0/mo",
+        "monthly_cap": 100,
+        "per_minute_cap": 5,
+        "features": [
+          "current deals",
+          "basic specs"
+        ]
+      },
+      "indie": {
+        "slug": "indie",
+        "price": "$12/mo",
+        "monthly_cap": 5000,
+        "per_minute_cap": 30,
+        "features": [
+          "LLM benchmarks",
+          "90-day price history",
+          "MCP access"
+        ]
+      },
+      "pro": {
+        "slug": "pro",
+        "price": "$49/mo",
+        "monthly_cap": 50000,
+        "per_minute_cap": 120,
+        "features": [
+          "full history",
+          "restock webhooks"
+        ]
+      },
+      "enterprise": {
+        "slug": "enterprise",
+        "price": "$199/mo",
+        "monthly_cap": 250000,
+        "per_minute_cap": 600,
+        "features": [
+          "bulk exports",
+          "priority webhooks",
+          "custom SKU tracking"
+        ]
+      }
+    }
   },
-  "license": {
-   "name": "Apache-2.0",
-   "identifier": "Apache-2.0"
-  },
-  "x-tier-pricing": {
-   "free": {
-    "slug": "free",
-    "price": "$0/mo",
-    "monthly_cap": 100,
-    "per_minute_cap": 5,
-    "features": [
-     "current deals",
-     "basic specs"
-    ]
-   },
-   "indie": {
-    "slug": "indie",
-    "price": "$12/mo",
-    "monthly_cap": 5000,
-    "per_minute_cap": 30,
-    "features": [
-     "LLM benchmarks",
-     "90-day price history",
-     "MCP access"
-    ]
-   },
-   "pro": {
-    "slug": "pro",
-    "price": "$49/mo",
-    "monthly_cap": 50000,
-    "per_minute_cap": 120,
-    "features": [
-     "full history",
-     "restock webhooks"
-    ]
-   },
-   "enterprise": {
-    "slug": "enterprise",
-    "price": "$199/mo",
-    "monthly_cap": 250000,
-    "per_minute_cap": 600,
-    "features": [
-     "bulk exports",
-     "priority webhooks",
-     "custom SKU tracking"
-    ]
-   }
-  },
-  "x-category": "Data"
- },
- "servers": [
-  {
-   "url": "https://chipradar.io",
-   "description": "Production"
-  }
- ],
- "paths": {
-  "/api/v1/boards": {
-   "get": {
-    "operationId": "listBoards",
-    "summary": "List tracked boards",
-    "description": "Returns all active `price_tracked_products` joined with `board_specs`,\nenriched with the cheapest in-stock vendor price from `vendor_comparison`.\n",
-    "tags": [
-     "v1 \u2014 boards"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "parameters": [
-     {
-      "name": "family",
-      "in": "query",
-      "schema": {
-       "type": "string"
-      },
-      "required": false,
-      "description": "Filter by product family (e.g. `raspberry_pi`)."
-     },
-     {
-      "name": "brand",
-      "in": "query",
-      "schema": {
-       "type": "string"
-      },
-      "required": false,
-      "description": "Filter by board brand (e.g. `Raspberry Pi`)."
-     },
-     {
-      "name": "limit",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 20,
-       "maximum": 100
-      },
-      "required": false
-     },
-     {
-      "name": "offset",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 0
-      },
-      "required": false
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "List of boards",
-      "headers": {
-       "X-RateLimit-Limit": {
-        "schema": {
-         "type": "integer",
-         "example": 100
-        }
-       },
-       "X-RateLimit-Remaining": {
-        "schema": {
-         "type": "integer"
-        }
-       },
-       "X-RateLimit-Limit-Minute": {
-        "schema": {
-         "type": "integer",
-         "example": 5
-        }
-       },
-       "X-RateLimit-Remaining-Minute": {
-        "schema": {
-         "type": "integer"
-        }
-       },
-       "X-RateLimit-Window": {
-        "schema": {
-         "type": "string"
-        }
-       },
-       "X-RateLimit-Tier": {
-        "schema": {
-         "type": "string",
-         "example": "free"
-        }
-       }
-      },
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/BoardListResponse"
-        },
-        "example": {
-         "success": true,
-         "count": 2,
-         "total": 56,
-         "tier": "indie",
-         "boards": [
+  "servers": [
+    {
+      "url": "https://chipradar.io",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:8093/api/v1",
+      "description": "Local uvicorn test server"
+    }
+  ],
+  "paths": {
+    "/api/v1/boards": {
+      "get": {
+        "operationId": "listBoards",
+        "summary": "List tracked boards",
+        "description": "Returns all active `price_tracked_products` joined with `board_specs`,\nenriched with the cheapest in-stock vendor price from `vendor_comparison`.\n",
+        "tags": [
+          "v1 \u2014 boards"
+        ],
+        "security": [
           {
-           "asin": "B0CK3L9WD3",
-           "name": "Raspberry Pi 5 4GB",
-           "family": "raspberry_pi",
-           "category": "single_board_computer",
-           "brand": "Raspberry Pi",
-           "cpu_soc": "BCM2712",
-           "cpu_arch": "ARM",
-           "ram": "4GB",
-           "ram_type": "LPDDR4X",
-           "form_factor": "credit_card",
-           "board_tier": "free",
-           "current_price": 110.0,
-           "availability": "in_stock",
-           "last_price_update": "2026-11-11T12:00:00Z",
-           "best_price": 110.0,
-           "best_vendor": "PiShop.us",
-           "vendors": [
-            {
-             "vendor": "PiShop.us",
-             "price": 110.0,
-             "currency": "USD",
-             "in_stock": true
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "family",
+            "in": "query",
+            "schema": {
+              "type": "string"
             },
-            {
-             "vendor": "Adafruit",
-             "price": 115.0,
-             "currency": "USD",
-             "in_stock": true
+            "required": false,
+            "description": "Filter by product family (e.g. `raspberry_pi`)."
+          },
+          {
+            "name": "brand",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "description": "Filter by board brand (e.g. `Raspberry Pi`)."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            },
+            "required": false
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of boards",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "schema": {
+                  "type": "integer",
+                  "example": 100
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Limit-Minute": {
+                "schema": {
+                  "type": "integer",
+                  "example": 5
+                }
+              },
+              "X-RateLimit-Remaining-Minute": {
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Window": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Tier": {
+                "schema": {
+                  "type": "string",
+                  "example": "free"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardListResponse"
+                },
+                "example": {
+                  "success": true,
+                  "count": 2,
+                  "total": 56,
+                  "tier": "indie",
+                  "boards": [
+                    {
+                      "asin": "B0CK3L9WD3",
+                      "name": "Raspberry Pi 5 4GB",
+                      "family": "raspberry_pi",
+                      "category": "single_board_computer",
+                      "brand": "Raspberry Pi",
+                      "cpu_soc": "BCM2712",
+                      "cpu_arch": "ARM",
+                      "ram": "4GB",
+                      "ram_type": "LPDDR4X",
+                      "memory_bandwidth_gbps": 17.0,
+                      "derived_bandwidth_gbps": 34.1,
+                      "max_q4_model_b": 6.0,
+                      "os_support": "Raspberry Pi OS, Ubuntu 24.04, Debian 12",
+                      "lifecycle_status": "active",
+                      "eol_date": null,
+                      "spec_source_url": "https://www.raspberrypi.com/documentation/",
+                      "form_factor": "credit_card",
+                      "board_tier": "free",
+                      "current_price": 110.0,
+                      "availability": "in_stock",
+                      "last_price_update": "2026-11-11T12:00:00Z",
+                      "best_price": 110.0,
+                      "best_vendor": "PiShop.us",
+                      "landed_price_usd": 110.0,
+                      "shipping_usd_us": 0.0,
+                      "psu_included": null,
+                      "estimated_delivery_days": null,
+                      "vendors": [
+                        {
+                          "vendor": "PiShop.us",
+                          "price": 110.0,
+                          "currency": "USD",
+                          "in_stock": true
+                        },
+                        {
+                          "vendor": "Adafruit",
+                          "price": 115.0,
+                          "currency": "USD",
+                          "in_stock": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
             }
-           ]
-          }
-         ]
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 boards",
-      "note": "no history/deep specs"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v1/boards/{asin}/history": {
-   "get": {
-    "operationId": "boardHistory",
-    "summary": "Board price history",
-    "description": "Returns vendor price history for a single board from the `price_history`\ntable. Free tier is limited to 7 days.\n",
-    "tags": [
-     "v1 \u2014 boards"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "parameters": [
-     {
-      "name": "asin",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "string"
-      },
-      "description": "Board ASIN / canonical product ID."
-     },
-     {
-      "name": "days",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 30,
-       "maximum": 365
-      },
-      "required": false
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Price history",
-      "headers": {
-       "X-RateLimit-Limit": {
-        "schema": {
-         "type": "integer",
-         "example": 100
-        }
-       },
-       "X-RateLimit-Remaining": {
-        "schema": {
-         "type": "integer"
-        }
-       },
-       "X-RateLimit-Limit-Minute": {
-        "schema": {
-         "type": "integer",
-         "example": 5
-        }
-       },
-       "X-RateLimit-Remaining-Minute": {
-        "schema": {
-         "type": "integer"
-        }
-       },
-       "X-RateLimit-Window": {
-        "schema": {
-         "type": "string"
-        }
-       },
-       "X-RateLimit-Tier": {
-        "schema": {
-         "type": "string",
-         "example": "free"
-        }
-       }
-      },
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/BoardHistoryResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "asin": "B0CK2FCG1K",
-         "name": "Raspberry Pi 5 8GB",
-         "days": 30,
-         "data_points": 12,
-         "history": [
-          {
-           "price": 175.0,
-           "timestamp": "2026-11-10T12:00:00Z",
-           "vendor": "PiShop.us",
-           "stock_status": "in_stock"
           },
-          {
-           "price": 179.99,
-           "timestamp": "2026-11-05T12:00:00Z",
-           "vendor": "Pimoroni",
-           "stock_status": "in_stock"
-          }
-         ]
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "404": {
-      "$ref": "#/components/responses/NotFound"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 boards/deals/restocks",
-      "max_days": 7
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100",
-      "max_days": 90
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v1/deals": {
-   "get": {
-    "operationId": "listDeals",
-    "summary": "Current deals",
-    "description": "Boards priced below MSRP, sorted by descending deal score. Free tier\nreturns at most 5 deals.\n",
-    "tags": [
-     "v1 \u2014 deals"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "parameters": [
-     {
-      "name": "min_score",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 0,
-       "minimum": 0,
-       "maximum": 100
-      }
-     },
-     {
-      "name": "limit",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 20,
-       "maximum": 50
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Deal list",
-      "headers": {
-       "X-RateLimit-Limit": {
-        "schema": {
-         "type": "integer",
-         "example": 100
-        }
-       },
-       "X-RateLimit-Remaining": {
-        "schema": {
-         "type": "integer"
-        }
-       },
-       "X-RateLimit-Limit-Minute": {
-        "schema": {
-         "type": "integer",
-         "example": 5
-        }
-       },
-       "X-RateLimit-Remaining-Minute": {
-        "schema": {
-         "type": "integer"
-        }
-       },
-       "X-RateLimit-Window": {
-        "schema": {
-         "type": "string"
-        }
-       },
-       "X-RateLimit-Tier": {
-        "schema": {
-         "type": "string",
-         "example": "free"
-        }
-       }
-      },
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/DealListResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "count": 1,
-         "deals": [
-          {
-           "asin": "B0CK3L9WD3",
-           "name": "Raspberry Pi 5 4GB",
-           "family": "raspberry_pi",
-           "best_price": 55.0,
-           "best_vendor": "PiShop.us",
-           "msrp": 110.0,
-           "savings_pct": 50.0,
-           "savings_amount": 55.0,
-           "deal_score": 92
-          }
-         ]
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 deals"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v1/restocks": {
-   "get": {
-    "operationId": "listRestocks",
-    "summary": "Aggregated restock signals",
-    "description": "Public restock signals aggregated from the `restock_alerts` table.\nReturns one row per product ASIN with alert count, last alert timestamp,\nand current availability from `price_tracked_products`.\n",
-    "tags": [
-     "v1 \u2014 restocks"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "parameters": [
-     {
-      "name": "limit",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 20,
-       "maximum": 100
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Restock signals",
-      "headers": {
-       "X-RateLimit-Limit": {
-        "schema": {
-         "type": "integer",
-         "example": 100
-        }
-       },
-       "X-RateLimit-Remaining": {
-        "schema": {
-         "type": "integer"
-        }
-       },
-       "X-RateLimit-Limit-Minute": {
-        "schema": {
-         "type": "integer",
-         "example": 5
-        }
-       },
-       "X-RateLimit-Remaining-Minute": {
-        "schema": {
-         "type": "integer"
-        }
-       },
-       "X-RateLimit-Window": {
-        "schema": {
-         "type": "string"
-        }
-       },
-       "X-RateLimit-Tier": {
-        "schema": {
-         "type": "string",
-         "example": "free"
-        }
-       }
-      },
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/RestockListResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "count": 1,
-         "total": 8,
-         "restock_alerts": [
-          {
-           "asin": "B0CK2FCG1K",
-           "name": "Raspberry Pi 5 8GB",
-           "alert_count": 14,
-           "last_alert": "2026-11-10T09:00:00Z",
-           "current_availability": "in_stock"
-          }
-         ]
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 restock alerts"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v1/benchmarks/llm": {
-   "get": {
-    "operationId": "llmBenchmarksPlaceholder",
-    "summary": "LLM-on-board benchmark placeholder",
-    "description": "Cited LLM-on-board benchmark rows. Requires Indie/Builder tier or above ($12/mo).",
-    "tags": [
-     "v1 \u2014 benchmarks"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Placeholder response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/LLMBenchmarkPlaceholder"
-        },
-        "example": {
-         "success": true,
-         "beta": true,
-         "count": 2,
-         "citation": "Every row links to its published source via source_url; figures are vendor/community-published, not ChipRadar lab measurements.",
-         "benchmark_rows": [
-          {
-           "device_id": "B0CK2FCG1K",
-           "platform": "Raspberry Pi 5 8GB",
-           "ram_gb": 8,
-           "model_name": "Llama-2-7B",
-           "quantization": "Q4_K_M",
-           "tokens_per_sec": 4.2,
-           "power_watts": 7.0,
-           "power_mode": "",
-           "runtime": "llama.cpp",
-           "usd_price": 175.0,
-           "perf_per_dollar": 0.024,
-           "perf_per_watt": 0.6,
-           "llamacpp_commit": "b2917",
-           "source_url": "https://www.example.com/rpi5-llama-benchmark",
-           "fetched_at": "2026-11-01",
-           "notes": "USB-C power"
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           },
-          {
-           "device_id": "B0DXQ3DTSK",
-           "platform": "Radxa Rock 5T 16GB",
-           "ram_gb": 16,
-           "model_name": "Qwen2.5-7B",
-           "quantization": "Q4_0",
-           "tokens_per_sec": 18.5,
-           "power_watts": 15.0,
-           "power_mode": "",
-           "runtime": "llama.cpp",
-           "usd_price": 249.0,
-           "perf_per_dollar": 0.074,
-           "perf_per_watt": 1.23,
-           "llamacpp_commit": "b2917",
-           "source_url": "https://www.example.com/rock5t-qwen-benchmark",
-           "fetched_at": "2026-11-02",
-           "notes": "5V/5A"
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
           }
-         ]
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     },
-     "403": {
-      "description": "Tier does not include LLM benchmarks (Indie/Builder required).",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/Error"
         },
-        "example": {
-         "success": false,
-         "error": "LLM benchmark data requires the Indie/Builder tier or above.",
-         "tier": "free"
-        }
-       }
-      }
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "allowed": false,
-      "reason": "Requires Indie/Builder tier or above ($12/mo)."
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v1/inference/health": {
-   "get": {
-    "operationId": "inferenceHealth",
-    "summary": "Inference telemetry health snapshot",
-    "description": "Rolling 24h health and budget status for all active inference providers.\nAvailable to every tier; returns `providers: []` and `status: no-data-yet`\nwhen the inference tables are empty.\n",
-    "tags": [
-     "v1 \u2014 inference telemetry"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Inference health snapshot",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/InferenceHealthResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "free",
-         "generated_at": "2026-11-11T12:00:00Z",
-         "window": "24h",
-         "status": "ok",
-         "budget": {
-          "month": "2026-11",
-          "spent_usd": 1.23,
-          "cap_usd": 5.0,
-          "paused": false,
-          "updated_utc": "2026-11-11T12:00:00Z"
-         },
-         "providers": [
-          {
-           "slug": "openrouter",
-           "display_name": "OpenRouter",
-           "uptime_24h_pct": 99.9,
-           "p50_ttft_ms_24h": 110,
-           "p50_gen_tok_per_sec_24h": 44,
-           "err_429_pct_24h": 0.1,
-           "err_5xx_pct_24h": 0.0,
-           "effective_cost_per_1m_tokens": 0.2,
-           "last_probe_utc": "2026-11-11T11:00:00Z"
-          }
-         ]
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600
-     }
-    }
-   }
-  },
-  "/api/v1/inference/models/{model_slug}/routes": {
-   "get": {
-    "operationId": "inferenceModelRoutes",
-    "summary": "Per-provider routes for one inference model",
-    "description": "Returns provider routes, prices, and 7-day probe metrics for a single model. Requires Indie/Builder tier or above.",
-    "tags": [
-     "v1 \u2014 inference telemetry"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "parameters": [
-     {
-      "name": "model_slug",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "string"
-      },
-      "description": "Inference model slug, e.g. `llama-3-8b`."
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Routes with metrics",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/InferenceRoutesResponse"
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "403": {
-      "description": "Requires Indie/Builder tier or above.",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/UpgradeRequired"
-        }
-       }
-      }
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "allowed": false,
-      "reason": "Requires Indie/Builder tier or above ($12/mo)."
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600
-     }
-    }
-   }
-  },
-  "/api/v1/inference/recommend": {
-   "get": {
-    "operationId": "inferenceRecommend",
-    "summary": "Recommend the best provider for a model",
-    "description": "Ranks routes by cost, latency, or a balanced blend. Requires Indie/Builder tier or above.",
-    "tags": [
-     "v1 \u2014 inference telemetry"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "parameters": [
-     {
-      "name": "model",
-      "in": "query",
-      "required": true,
-      "schema": {
-       "type": "string"
-      },
-      "description": "Inference model slug, e.g. `llama-3-8b`."
-     },
-     {
-      "name": "priority",
-      "in": "query",
-      "schema": {
-       "type": "string",
-       "enum": [
-        "cost",
-        "latency",
-        "balanced"
-       ],
-       "default": "balanced"
-      },
-      "description": "Ranking priority."
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Ranked recommendations",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/InferenceRecommendResponse"
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "403": {
-      "description": "Requires Indie/Builder tier or above.",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/UpgradeRequired"
-        }
-       }
-      }
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "allowed": false,
-      "reason": "Requires Indie/Builder tier or above ($12/mo)."
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600
-     }
-    }
-   }
-  },
-  "/api/v1/inference/breakeven": {
-   "get": {
-    "operationId": "inferenceBreakeven",
-    "summary": "Cloud-vs-local breakeven calculator",
-    "description": "Compares 30-day cloud inference spend against the cheapest in-stock board (from `vendor_comparison`, non-Amazon, \u22647 days fresh) that can run the model class on-device. Requires Indie/Builder tier or above.",
-    "tags": [
-     "v1 \u2014 inference telemetry"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "parameters": [
-     {
-      "name": "daily_tokens",
-      "in": "query",
-      "required": true,
-      "schema": {
-       "type": "integer",
-       "minimum": 1
-      },
-      "description": "Expected output tokens generated per day."
-     },
-     {
-      "name": "model",
-      "in": "query",
-      "required": true,
-      "schema": {
-       "type": "string"
-      },
-      "description": "Inference model slug, e.g. `llama-3-8b`."
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Breakeven analysis",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/InferenceBreakevenResponse"
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "403": {
-      "description": "Requires Indie/Builder tier or above.",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/UpgradeRequired"
-        }
-       }
-      }
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "allowed": false,
-      "reason": "Requires Indie/Builder tier or above ($12/mo)."
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600
-     }
-    }
-   }
-  },
-  "/api/v2/products": {
-   "get": {
-    "operationId": "listProducts",
-    "summary": "List products (v2)",
-    "description": "List tracked products with current best vendor prices.",
-    "tags": [
-     "v2 \u2014 products"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "parameters": [
-     {
-      "name": "family",
-      "in": "query",
-      "schema": {
-       "type": "string"
-      }
-     },
-     {
-      "name": "limit",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 20,
-       "maximum": 100
-      }
-     },
-     {
-      "name": "offset",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 0
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Product list",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/ProductListResponse"
-        },
-        "example": {
-         "success": true,
-         "count": 2,
-         "total": 56,
-         "tier": "indie",
-         "products": [
-          {
-           "asin": "B0CK3L9WD3",
-           "name": "Raspberry Pi 5 4GB",
-           "family": "raspberry_pi",
-           "category": "single_board_computer",
-           "current_price": 110.0,
-           "best_price": 110.0,
-           "best_vendor": "PiShop.us",
-           "availability": "in_stock",
-           "last_updated": "2026-11-11T12:00:00Z"
-          }
-         ]
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 products"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/products/{asin}": {
-   "get": {
-    "operationId": "getProduct",
-    "summary": "Product detail (v2)",
-    "description": "Full product with vendors and MSRP.",
-    "tags": [
-     "v2 \u2014 products"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "parameters": [
-     {
-      "name": "asin",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "string"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Product detail",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/ProductDetailResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "product": {
-          "asin": "B0CK3L9WD3",
-          "name": "Raspberry Pi 5 4GB",
-          "vendors": [
-           {
-            "vendor": "PiShop.us",
-            "price": 110.0,
-            "currency": "USD",
-            "in_stock": true
-           }
-          ],
-          "msrp": 110.0
-         }
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "404": {
-      "$ref": "#/components/responses/NotFound"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 boards/deals/restocks",
-      "vendor_limit": 2,
-      "hides_affiliate": true
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/products/{asin}/vendors": {
-   "get": {
-    "operationId": "getProductVendors",
-    "summary": "Vendor comparison (v2)",
-    "tags": [
-     "v2 \u2014 products"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "parameters": [
-     {
-      "name": "asin",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "string"
-      }
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Vendor list",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/VendorListResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "product_name": "Raspberry Pi 5 4GB",
-         "asin": "B0CK3L9WD3",
-         "vendors_count": 2,
-         "vendors": [
-          {
-           "vendor": "PiShop.us",
-           "price": 110.0,
-           "currency": "USD",
-           "in_stock": true,
-           "url": "https://pishop.us/...",
-           "affiliate_url": null,
-           "last_scraped": "2026-11-11T12:00:00Z"
-          },
-          {
-           "vendor": "Adafruit",
-           "price": 115.0,
-           "currency": "USD",
-           "in_stock": true,
-           "url": "https://adafruit.com/...",
-           "affiliate_url": null,
-           "last_scraped": "2026-11-11T12:00:00Z"
-          }
-         ]
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "404": {
-      "$ref": "#/components/responses/NotFound"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "description": "Multi-vendor price comparison for a product.",
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 boards/deals/restocks",
-      "vendor_limit": 2
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/products/{asin}/price-history": {
-   "get": {
-    "operationId": "getProductPriceHistory",
-    "summary": "Price history (v2)",
-    "parameters": [
-     {
-      "name": "asin",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "string"
-      }
-     },
-     {
-      "name": "days",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 30,
-       "maximum": 365
-      }
-     }
-    ],
-    "tags": [
-     "v2 \u2014 products"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Price history",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/PriceHistoryResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "product_name": "Raspberry Pi 5 4GB",
-         "asin": "B0CK3L9WD3",
-         "days": 30,
-         "data_points": 12,
-         "history": [
-          {
-           "price": 110.0,
-           "timestamp": "2026-11-10T12:00:00Z",
-           "vendor": "PiShop.us",
-           "stock_status": "in_stock"
-          }
-         ]
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "404": {
-      "$ref": "#/components/responses/NotFound"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "description": "Historical vendor prices for a product. Free tier limited to 7 days.",
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 boards/deals/restocks",
-      "max_days": 7
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/prices": {
-   "get": {
-    "operationId": "getPrices",
-    "summary": "Bulk price snapshot (v2)",
-    "tags": [
-     "v2 \u2014 prices"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Bulk prices",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/BulkPriceResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "count": 2,
-         "prices": {
-          "B0CK3L9WD3": {
-           "name": "Raspberry Pi 5 4GB",
-           "family": "raspberry_pi",
-           "best_price": 110.0,
-           "best_vendor": "PiShop.us",
-           "current_price": 110.0,
-           "availability": "in_stock",
-           "last_updated": "2026-11-11T12:00:00Z"
-          }
-         }
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     },
-     "429": {
-      "$ref": "#/components/responses/RateLimit"
-     }
-    },
-    "description": "Bulk price snapshot across all products.",
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 products"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/prices/changes": {
-   "get": {
-    "operationId": "getPriceChanges",
-    "summary": "Recent price changes (v2)",
-    "parameters": [
-     {
-      "name": "hours",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 24,
-       "maximum": 168
-      }
-     }
-    ],
-    "tags": [
-     "v2 \u2014 prices"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Recent changes",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/PriceChangesResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "hours": 24,
-         "changes_count": 1,
-         "changes": [
-          {
-           "asin": "B0CK3L9WD3",
-           "product_name": "Raspberry Pi 5 4GB",
-           "family": "raspberry_pi",
-           "price": 110.0,
-           "vendor": "PiShop.us",
-           "stock_status": "in_stock",
-           "changed_at": "2026-11-10T12:00:00Z"
-          }
-         ]
-        }
-       }
-      }
-     }
-    },
-    "description": "Recent price changes across all tracked products. Free tier limited to 6 hours.",
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 boards/deals/restocks",
-      "max_hours": 6
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/vendors": {
-   "get": {
-    "operationId": "listVendors",
-    "summary": "Vendor stats (v2)",
-    "tags": [
-     "v2 \u2014 vendors"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Vendor list",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/VendorStatsResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "count": 2,
-         "vendors": [
-          {
-           "vendor": "PiShop.us",
-           "product_count": 9,
-           "avg_price": 120.0,
-           "min_price": 55.0
-          }
-         ]
-        }
-       }
-      }
-     }
-    },
-    "description": "Vendor-level statistics: product count, average price, minimum price.",
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 boards/deals/restocks"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/bulk-prices": {
-   "get": {
-    "operationId": "getBulkPrices",
-    "summary": "Bulk price snapshot alias (v2)",
-    "tags": [
-     "v2 \u2014 prices"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Bulk prices",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/BulkPriceResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "count": 2,
-         "prices": {
-          "B0CK3L9WD3": {
-           "name": "Raspberry Pi 5 4GB",
-           "best_price": 110.0,
-           "best_vendor": "PiShop.us"
-          }
-         }
-        }
-       }
-      }
-     }
-    },
-    "description": "Alias of /api/v2/prices for bulk price snapshots.",
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 products"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/deals": {
-   "get": {
-    "operationId": "getV2Deals",
-    "summary": "Deals (v2)",
-    "parameters": [
-     {
-      "name": "min_score",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 0
-      }
-     },
-     {
-      "name": "limit",
-      "in": "query",
-      "schema": {
-       "type": "integer",
-       "default": 20
-      }
-     }
-    ],
-    "tags": [
-     "v2 \u2014 deals"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Deals",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/DealListResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "count": 1,
-         "deals": [
-          {
-           "asin": "B0CK3L9WD3",
-           "name": "Raspberry Pi 5 4GB",
-           "family": "raspberry_pi",
-           "best_price": 55.0,
-           "best_vendor": "PiShop.us",
-           "msrp": 110.0,
-           "savings_pct": 50.0,
-           "savings_amount": 55.0,
-           "deal_score": 92
-          }
-         ]
-        }
-       }
-      }
-     }
-    },
-    "description": "Current deals sorted by deal score.",
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 deals"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/families": {
-   "get": {
-    "operationId": "listFamilies",
-    "summary": "Product families (v2)",
-    "tags": [
-     "v2 \u2014 metadata"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Families",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/FamilyListResponse"
-        },
-        "example": {
-         "success": true,
-         "count": 5,
-         "families": [
-          {
-           "family": "raspberry_pi",
-           "product_count": 6,
-           "avg_price": 95.0,
-           "min_price": 55.0,
-           "max_price": 175.0,
-           "avg_msrp": 110.0
-          }
-         ]
-        }
-       }
-      }
-     }
-    },
-    "description": "List product families with summary counts and price statistics.",
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 boards/deals/restocks"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/families/{family_name}": {
-   "get": {
-    "operationId": "getFamilyDetail",
-    "summary": "Family detail (v2)",
-    "parameters": [
-     {
-      "name": "family_name",
-      "in": "path",
-      "required": true,
-      "schema": {
-       "type": "string"
-      }
-     }
-    ],
-    "tags": [
-     "v2 \u2014 metadata"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Family detail",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/FamilyDetailResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "family": "raspberry_pi",
-         "product_count": 6,
-         "products": [
-          {
-           "asin": "B0CK3L9WD3",
-           "name": "Raspberry Pi 5 4GB",
-           "best_price": 110.0
-          }
-         ]
-        }
-       }
-      }
-     },
-     "401": {
-      "$ref": "#/components/responses/Unauthorized"
-     }
-    },
-    "description": "Detail for a single product family.",
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 boards/deals/restocks"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/health": {
-   "get": {
-    "operationId": "health",
-    "summary": "Health check",
-    "tags": [
-     "system"
-    ],
-    "responses": {
-     "200": {
-      "description": "Health status",
-      "content": {
-       "application/json": {
-        "schema": {
-         "type": "object",
-         "properties": {
-          "status": {
-           "type": "string"
-          },
-          "database": {
-           "type": "string"
-          },
-          "api_keys_loaded": {
-           "type": "integer"
-          },
-          "uptime": {
-           "type": "string"
-          }
-         }
-        },
-        "example": {
-         "status": "ok",
-         "database": "connected",
-         "api_keys_loaded": 42,
-         "uptime": "2026-11-11T12:00:00Z"
-        }
-       }
-      }
-     }
-    },
-    "description": "Health and database connectivity check (no API key required)."
-   }
-  },
-  "/api/v2/keys/stats": {
-   "get": {
-    "operationId": "keyStats",
-    "summary": "Current key usage stats",
-    "tags": [
-     "auth"
-    ],
-    "security": [
-     {
-      "bearerAuth": []
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Quota usage",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/KeyStatsResponse"
-        },
-        "example": {
-         "success": true,
-         "tier": "indie",
-         "requests_used_month": 12,
-         "requests_limit_month": 5000,
-         "requests_remaining_month": 4988,
-         "requests_limit_minute": 30,
-         "requests_remaining_minute": 29,
-         "reset_in_hours": 720.0,
-         "rate_limit_window_hours": 720
-        }
-       }
-      }
-     }
-    },
-    "description": "Current API key tier and quota consumption.",
-    "x-tiers": {
-     "free": {
-      "price": "$0/mo",
-      "monthly_cap": 100,
-      "per_minute_cap": 5,
-      "per_call_limit": "5 boards/deals/restocks"
-     },
-     "indie": {
-      "price": "$12/mo",
-      "monthly_cap": 5000,
-      "per_minute_cap": 30,
-      "per_call_limit": "100"
-     },
-     "pro": {
-      "price": "$49/mo",
-      "monthly_cap": 50000,
-      "per_minute_cap": 120,
-      "per_call_limit": "100"
-     },
-     "enterprise": {
-      "price": "$199/mo",
-      "monthly_cap": 250000,
-      "per_minute_cap": 600,
-      "per_call_limit": "100"
-     }
-    }
-   }
-  },
-  "/api/v2/docs/info": {
-   "get": {
-    "operationId": "apiInfo",
-    "summary": "API info and tiers",
-    "tags": [
-     "metadata"
-    ],
-    "responses": {
-     "200": {
-      "description": "Info",
-      "content": {
-       "application/json": {
-        "schema": {
-         "type": "object"
-        },
-        "example": {
-         "name": "ChipRadar B2B API",
-         "version": "1.0.0",
-         "docs": "/api/v3/docs",
-         "tiers": {
+        "x-tiers": {
           "free": {
-           "price": "$0/mo",
-           "monthly_cap": 100,
-           "per_minute_cap": 5,
-           "per_call_limit": "5 boards/deals/restocks"
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 boards",
+            "note": "no history/deep specs"
           },
           "indie": {
-           "price": "$12/mo",
-           "monthly_cap": 5000,
-           "per_minute_cap": 30,
-           "per_call_limit": "100"
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
           },
           "pro": {
-           "price": "$49/mo",
-           "monthly_cap": 50000,
-           "per_minute_cap": 120,
-           "per_call_limit": "100"
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
           },
           "enterprise": {
-           "price": "$199/mo",
-           "monthly_cap": 250000,
-           "per_minute_cap": 600,
-           "per_call_limit": "100"
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
           }
-         }
         }
-       }
       }
-     }
     },
-    "description": "API metadata and tier/pricing information (no API key required)."
-   }
+    "/api/v1/boards/{asin}/history": {
+      "get": {
+        "operationId": "boardHistory",
+        "summary": "Board price history",
+        "description": "Returns vendor price history for a single board from the `price_history`\ntable. Free tier is limited to 7 days.\n",
+        "tags": [
+          "v1 \u2014 boards"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "asin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Board ASIN / canonical product ID."
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "maximum": 365
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Price history",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "schema": {
+                  "type": "integer",
+                  "example": 100
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Limit-Minute": {
+                "schema": {
+                  "type": "integer",
+                  "example": 5
+                }
+              },
+              "X-RateLimit-Remaining-Minute": {
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Window": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Tier": {
+                "schema": {
+                  "type": "string",
+                  "example": "free"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardHistoryResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "asin": "B0CK2FCG1K",
+                  "name": "Raspberry Pi 5 8GB",
+                  "days": 30,
+                  "data_points": 12,
+                  "history": [
+                    {
+                      "price": 175.0,
+                      "timestamp": "2026-11-10T12:00:00Z",
+                      "vendor": "PiShop.us",
+                      "stock_status": "in_stock"
+                    },
+                    {
+                      "price": 179.99,
+                      "timestamp": "2026-11-05T12:00:00Z",
+                      "vendor": "Pimoroni",
+                      "stock_status": "in_stock"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 boards/deals/restocks",
+            "max_days": 7
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100",
+            "max_days": 90
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v1/deals": {
+      "get": {
+        "operationId": "listDeals",
+        "summary": "Current deals",
+        "description": "Boards priced below MSRP, sorted by descending deal score. Free tier\nreturns at most 5 deals.\n",
+        "tags": [
+          "v1 \u2014 deals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "min_score",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deal list",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "schema": {
+                  "type": "integer",
+                  "example": 100
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Limit-Minute": {
+                "schema": {
+                  "type": "integer",
+                  "example": 5
+                }
+              },
+              "X-RateLimit-Remaining-Minute": {
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Window": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Tier": {
+                "schema": {
+                  "type": "string",
+                  "example": "free"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DealListResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "count": 1,
+                  "deals": [
+                    {
+                      "asin": "B0CK3L9WD3",
+                      "name": "Raspberry Pi 5 4GB",
+                      "family": "raspberry_pi",
+                      "best_price": 55.0,
+                      "best_vendor": "PiShop.us",
+                      "landed_price_usd": 55.0,
+                      "shipping_usd_us": 0.0,
+                      "psu_included": null,
+                      "estimated_delivery_days": null,
+                      "msrp": 110.0,
+                      "savings_pct": 50.0,
+                      "savings_amount": 55.0,
+                      "deal_score": 92
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 deals"
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v1/restocks": {
+      "get": {
+        "operationId": "listRestocks",
+        "summary": "Aggregated restock signals",
+        "description": "Public restock signals aggregated from the `restock_alerts` table.\nReturns one row per product ASIN with alert count, last alert timestamp,\nand current availability from `price_tracked_products`.\n",
+        "tags": [
+          "v1 \u2014 restocks"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Restock signals",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "schema": {
+                  "type": "integer",
+                  "example": 100
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Limit-Minute": {
+                "schema": {
+                  "type": "integer",
+                  "example": 5
+                }
+              },
+              "X-RateLimit-Remaining-Minute": {
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Window": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Tier": {
+                "schema": {
+                  "type": "string",
+                  "example": "free"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestockListResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "count": 1,
+                  "total": 8,
+                  "restock_alerts": [
+                    {
+                      "asin": "B0CK2FCG1K",
+                      "name": "Raspberry Pi 5 8GB",
+                      "alert_count": 14,
+                      "last_alert": "2026-11-10T09:00:00Z",
+                      "current_availability": "in_stock"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 restock alerts"
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v1/benchmarks/llm": {
+      "get": {
+        "operationId": "llmBenchmarksPlaceholder",
+        "summary": "LLM-on-board benchmark placeholder",
+        "description": "Cited LLM-on-board benchmark rows. Requires Indie/Builder tier or above ($12/mo).",
+        "tags": [
+          "v1 \u2014 benchmarks"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Placeholder response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LLMBenchmarkPlaceholder"
+                },
+                "example": {
+                  "success": true,
+                  "beta": true,
+                  "count": 2,
+                  "citation": "Every row links to its published source via source_url; figures are vendor/community-published, not ChipRadar lab measurements.",
+                  "benchmark_rows": [
+                    {
+                      "device_id": "B0CK2FCG1K",
+                      "platform": "Raspberry Pi 5 8GB",
+                      "ram_gb": 8,
+                      "model_name": "Llama-2-7B",
+                      "quantization": "Q4_K_M",
+                      "tokens_per_sec": 4.2,
+                      "power_watts": 7.0,
+                      "power_mode": "",
+                      "runtime": "llama.cpp",
+                      "usd_price": 175.0,
+                      "perf_per_dollar": 0.024,
+                      "perf_per_watt": 0.6,
+                      "llamacpp_commit": "b2917",
+                      "source_url": "https://www.example.com/rpi5-llama-benchmark",
+                      "fetched_at": "2026-11-01",
+                      "notes": "USB-C power"
+                    },
+                    {
+                      "device_id": "B0DXQ3DTSK",
+                      "platform": "Radxa Rock 5T 16GB",
+                      "ram_gb": 16,
+                      "model_name": "Qwen2.5-7B",
+                      "quantization": "Q4_0",
+                      "tokens_per_sec": 18.5,
+                      "power_watts": 15.0,
+                      "power_mode": "",
+                      "runtime": "llama.cpp",
+                      "usd_price": 249.0,
+                      "perf_per_dollar": 0.074,
+                      "perf_per_watt": 1.23,
+                      "llamacpp_commit": "b2917",
+                      "source_url": "https://www.example.com/rock5t-qwen-benchmark",
+                      "fetched_at": "2026-11-02",
+                      "notes": "5V/5A"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          },
+          "403": {
+            "description": "Tier does not include LLM benchmarks (Indie/Builder required).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "error": "LLM benchmark data requires the Indie/Builder tier or above.",
+                  "tier": "free"
+                }
+              }
+            }
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "allowed": false,
+            "reason": "Requires Indie/Builder tier or above ($12/mo)."
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v1/inference/health": {
+      "get": {
+        "operationId": "inferenceHealth",
+        "summary": "Inference telemetry health snapshot",
+        "description": "Rolling 24h health and budget status for all active inference providers.\nAvailable to every tier; returns `providers: []` and `status: no-data-yet`\nwhen the inference tables are empty.\n",
+        "tags": [
+          "v1 \u2014 inference telemetry"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inference health snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceHealthResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "free",
+                  "generated_at": "2026-11-11T12:00:00Z",
+                  "window": "24h",
+                  "status": "ok",
+                  "budget": {
+                    "month": "2026-11",
+                    "spent_usd": 1.23,
+                    "cap_usd": 5.0,
+                    "paused": false,
+                    "updated_utc": "2026-11-11T12:00:00Z"
+                  },
+                  "providers": [
+                    {
+                      "slug": "openrouter",
+                      "display_name": "OpenRouter",
+                      "uptime_24h_pct": 99.9,
+                      "p50_ttft_ms_24h": 110,
+                      "p50_gen_tok_per_sec_24h": 44,
+                      "err_429_pct_24h": 0.1,
+                      "err_5xx_pct_24h": 0.0,
+                      "effective_cost_per_1m_tokens": 0.2,
+                      "last_probe_utc": "2026-11-11T11:00:00Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600
+          }
+        }
+      }
+    },
+    "/api/v1/inference/models/{model_slug}/routes": {
+      "get": {
+        "operationId": "inferenceModelRoutes",
+        "summary": "Per-provider routes for one inference model",
+        "description": "Returns provider routes, prices, and 7-day probe metrics for a single model. Requires Indie/Builder tier or above.",
+        "tags": [
+          "v1 \u2014 inference telemetry"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Inference model slug, e.g. `llama-3-8b`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Routes with metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceRoutesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Requires Indie/Builder tier or above.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpgradeRequired"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "allowed": false,
+            "reason": "Requires Indie/Builder tier or above ($12/mo)."
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600
+          }
+        }
+      }
+    },
+    "/api/v1/inference/recommend": {
+      "get": {
+        "operationId": "inferenceRecommend",
+        "summary": "Recommend the best provider for a model",
+        "description": "Ranks routes by cost, latency, or a balanced blend. Requires Indie/Builder tier or above.",
+        "tags": [
+          "v1 \u2014 inference telemetry"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Inference model slug, e.g. `llama-3-8b`."
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "cost",
+                "latency",
+                "balanced"
+              ],
+              "default": "balanced"
+            },
+            "description": "Ranking priority."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ranked recommendations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceRecommendResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Requires Indie/Builder tier or above.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpgradeRequired"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "allowed": false,
+            "reason": "Requires Indie/Builder tier or above ($12/mo)."
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600
+          }
+        }
+      }
+    },
+    "/api/v1/inference/breakeven": {
+      "get": {
+        "operationId": "inferenceBreakeven",
+        "summary": "Cloud-vs-local breakeven calculator",
+        "description": "Compares 30-day cloud inference spend against the cheapest in-stock board (from `vendor_comparison`, non-Amazon, \u22647 days fresh) that can run the model class on-device. Requires Indie/Builder tier or above.",
+        "tags": [
+          "v1 \u2014 inference telemetry"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "daily_tokens",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Expected output tokens generated per day."
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Inference model slug, e.g. `llama-3-8b`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Breakeven analysis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceBreakevenResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Requires Indie/Builder tier or above.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpgradeRequired"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "allowed": false,
+            "reason": "Requires Indie/Builder tier or above ($12/mo)."
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600
+          }
+        }
+      }
+    },
+    "/api/v2/products": {
+      "get": {
+        "operationId": "listProducts",
+        "summary": "List products (v2)",
+        "description": "List tracked products with current best vendor prices.",
+        "tags": [
+          "v2 \u2014 products"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "family",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductListResponse"
+                },
+                "example": {
+                  "success": true,
+                  "count": 2,
+                  "total": 56,
+                  "tier": "indie",
+                  "products": [
+                    {
+                      "asin": "B0CK3L9WD3",
+                      "name": "Raspberry Pi 5 4GB",
+                      "family": "raspberry_pi",
+                      "category": "single_board_computer",
+                      "current_price": 110.0,
+                      "best_price": 110.0,
+                      "best_landed_price": 110.0,
+                      "best_vendor": "PiShop.us",
+                      "availability": "in_stock",
+                      "last_updated": "2026-11-11T12:00:00Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 products"
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{asin}": {
+      "get": {
+        "operationId": "getProduct",
+        "summary": "Product detail (v2)",
+        "description": "Full product with vendors and MSRP.",
+        "tags": [
+          "v2 \u2014 products"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "asin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDetailResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "product": {
+                    "asin": "B0CK3L9WD3",
+                    "name": "Raspberry Pi 5 4GB",
+                    "vendors": [
+                      {
+                        "vendor": "PiShop.us",
+                        "price": 110.0,
+                        "currency": "USD",
+                        "in_stock": true
+                      }
+                    ],
+                    "msrp": 110.0
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 boards/deals/restocks",
+            "vendor_limit": 2,
+            "hides_affiliate": true
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{asin}/vendors": {
+      "get": {
+        "operationId": "getProductVendors",
+        "summary": "Vendor comparison (v2)",
+        "tags": [
+          "v2 \u2014 products"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "asin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vendor list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VendorListResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "product_name": "Raspberry Pi 5 4GB",
+                  "asin": "B0CK3L9WD3",
+                  "vendors_count": 2,
+                  "vendors": [
+                    {
+                      "vendor": "PiShop.us",
+                      "price": 110.0,
+                      "currency": "USD",
+                      "in_stock": true,
+                      "url": "https://pishop.us/...",
+                      "affiliate_url": null,
+                      "last_scraped": "2026-11-11T12:00:00Z"
+                    },
+                    {
+                      "vendor": "Adafruit",
+                      "price": 115.0,
+                      "currency": "USD",
+                      "in_stock": true,
+                      "url": "https://adafruit.com/...",
+                      "affiliate_url": null,
+                      "last_scraped": "2026-11-11T12:00:00Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "description": "Multi-vendor price comparison for a product.",
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 boards/deals/restocks",
+            "vendor_limit": 2
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{asin}/price-history": {
+      "get": {
+        "operationId": "getProductPriceHistory",
+        "summary": "Price history (v2)",
+        "parameters": [
+          {
+            "name": "asin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "maximum": 365
+            }
+          }
+        ],
+        "tags": [
+          "v2 \u2014 products"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Price history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PriceHistoryResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "product_name": "Raspberry Pi 5 4GB",
+                  "asin": "B0CK3L9WD3",
+                  "days": 30,
+                  "data_points": 12,
+                  "history": [
+                    {
+                      "price": 110.0,
+                      "timestamp": "2026-11-10T12:00:00Z",
+                      "vendor": "PiShop.us",
+                      "stock_status": "in_stock"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "description": "Historical vendor prices for a product. Free tier limited to 7 days.",
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 boards/deals/restocks",
+            "max_days": 7
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/prices": {
+      "get": {
+        "operationId": "getPrices",
+        "summary": "Bulk price snapshot (v2)",
+        "tags": [
+          "v2 \u2014 prices"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bulk prices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPriceResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "count": 2,
+                  "prices": {
+                    "B0CK3L9WD3": {
+                      "name": "Raspberry Pi 5 4GB",
+                      "family": "raspberry_pi",
+                      "best_price": 110.0,
+                      "best_vendor": "PiShop.us",
+                      "current_price": 110.0,
+                      "availability": "in_stock",
+                      "last_updated": "2026-11-11T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "description": "Bulk price snapshot across all products.",
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 products"
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/prices/changes": {
+      "get": {
+        "operationId": "getPriceChanges",
+        "summary": "Recent price changes (v2)",
+        "parameters": [
+          {
+            "name": "hours",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 24,
+              "maximum": 168
+            }
+          }
+        ],
+        "tags": [
+          "v2 \u2014 prices"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recent changes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PriceChangesResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "hours": 24,
+                  "changes_count": 1,
+                  "changes": [
+                    {
+                      "asin": "B0CK3L9WD3",
+                      "product_name": "Raspberry Pi 5 4GB",
+                      "family": "raspberry_pi",
+                      "price": 110.0,
+                      "vendor": "PiShop.us",
+                      "stock_status": "in_stock",
+                      "changed_at": "2026-11-10T12:00:00Z"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "Recent price changes across all tracked products. Free tier limited to 6 hours.",
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 boards/deals/restocks",
+            "max_hours": 6
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/vendors": {
+      "get": {
+        "operationId": "listVendors",
+        "summary": "Vendor stats (v2)",
+        "tags": [
+          "v2 \u2014 vendors"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vendor list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VendorStatsResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "count": 2,
+                  "vendors": [
+                    {
+                      "vendor": "PiShop.us",
+                      "product_count": 9,
+                      "avg_price": 120.0,
+                      "min_price": 55.0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "Vendor-level statistics: product count, average price, minimum price.",
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 boards/deals/restocks"
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/bulk-prices": {
+      "get": {
+        "operationId": "getBulkPrices",
+        "summary": "Bulk price snapshot alias (v2)",
+        "tags": [
+          "v2 \u2014 prices"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bulk prices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPriceResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "count": 2,
+                  "prices": {
+                    "B0CK3L9WD3": {
+                      "name": "Raspberry Pi 5 4GB",
+                      "best_price": 110.0,
+                      "best_vendor": "PiShop.us"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Alias of /api/v2/prices for bulk price snapshots.",
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 products"
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/deals": {
+      "get": {
+        "operationId": "getV2Deals",
+        "summary": "Deals (v2)",
+        "parameters": [
+          {
+            "name": "min_score",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "tags": [
+          "v2 \u2014 deals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deals",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DealListResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "count": 1,
+                  "deals": [
+                    {
+                      "asin": "B0CK3L9WD3",
+                      "name": "Raspberry Pi 5 4GB",
+                      "family": "raspberry_pi",
+                      "best_price": 55.0,
+                      "best_vendor": "PiShop.us",
+                      "landed_price_usd": 55.0,
+                      "shipping_usd_us": 0.0,
+                      "psu_included": null,
+                      "estimated_delivery_days": null,
+                      "msrp": 110.0,
+                      "savings_pct": 50.0,
+                      "savings_amount": 55.0,
+                      "deal_score": 92
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "Current deals sorted by deal score.",
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 deals"
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/families": {
+      "get": {
+        "operationId": "listFamilies",
+        "summary": "Product families (v2)",
+        "tags": [
+          "v2 \u2014 metadata"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Families",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyListResponse"
+                },
+                "example": {
+                  "success": true,
+                  "count": 5,
+                  "families": [
+                    {
+                      "family": "raspberry_pi",
+                      "product_count": 6,
+                      "avg_price": 95.0,
+                      "min_price": 55.0,
+                      "max_price": 175.0,
+                      "avg_msrp": 110.0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "List product families with summary counts and price statistics.",
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 boards/deals/restocks"
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/families/{family_name}": {
+      "get": {
+        "operationId": "getFamilyDetail",
+        "summary": "Family detail (v2)",
+        "parameters": [
+          {
+            "name": "family_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "v2 \u2014 metadata"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Family detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyDetailResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "family": "raspberry_pi",
+                  "product_count": 6,
+                  "products": [
+                    {
+                      "asin": "B0CK3L9WD3",
+                      "name": "Raspberry Pi 5 4GB",
+                      "best_price": 110.0
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "description": "Detail for a single product family.",
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 boards/deals/restocks"
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "summary": "Health check",
+        "tags": [
+          "system"
+        ],
+        "responses": {
+          "200": {
+            "description": "Health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "database": {
+                      "type": "string"
+                    },
+                    "api_keys_loaded": {
+                      "type": "integer"
+                    },
+                    "uptime": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "status": "ok",
+                  "database": "connected",
+                  "api_keys_loaded": 42,
+                  "uptime": "2026-11-11T12:00:00Z"
+                }
+              }
+            }
+          }
+        },
+        "description": "Health and database connectivity check (no API key required)."
+      }
+    },
+    "/api/v2/keys/stats": {
+      "get": {
+        "operationId": "keyStats",
+        "summary": "Current key usage stats",
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quota usage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyStatsResponse"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "requests_used_month": 12,
+                  "requests_limit_month": 5000,
+                  "requests_remaining_month": 4988,
+                  "requests_limit_minute": 30,
+                  "requests_remaining_minute": 29,
+                  "reset_in_hours": 720.0,
+                  "rate_limit_window_hours": 720
+                }
+              }
+            }
+          }
+        },
+        "description": "Current API key tier and quota consumption.",
+        "x-tiers": {
+          "free": {
+            "price": "$0/mo",
+            "monthly_cap": 100,
+            "per_minute_cap": 5,
+            "per_call_limit": "5 boards/deals/restocks"
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30,
+            "per_call_limit": "100"
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120,
+            "per_call_limit": "100"
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600,
+            "per_call_limit": "100"
+          }
+        }
+      }
+    },
+    "/api/v2/docs/info": {
+      "get": {
+        "operationId": "apiInfo",
+        "summary": "API info and tiers",
+        "tags": [
+          "metadata"
+        ],
+        "responses": {
+          "200": {
+            "description": "Info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "name": "ChipRadar B2B API",
+                  "version": "1.0.0",
+                  "docs": "/api/v3/docs",
+                  "tiers": {
+                    "free": {
+                      "price": "$0/mo",
+                      "monthly_cap": 100,
+                      "per_minute_cap": 5,
+                      "per_call_limit": "5 boards/deals/restocks"
+                    },
+                    "indie": {
+                      "price": "$12/mo",
+                      "monthly_cap": 5000,
+                      "per_minute_cap": 30,
+                      "per_call_limit": "100"
+                    },
+                    "pro": {
+                      "price": "$49/mo",
+                      "monthly_cap": 50000,
+                      "per_minute_cap": 120,
+                      "per_call_limit": "100"
+                    },
+                    "enterprise": {
+                      "price": "$199/mo",
+                      "monthly_cap": 250000,
+                      "per_minute_cap": 600,
+                      "per_call_limit": "100"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "API metadata and tier/pricing information (no API key required)."
+      }
+    },
+    "/openapi-chipradar.yaml": {
+      "get": {
+        "operationId": "getOpenAPISpec",
+        "summary": "OpenAPI spec (YAML)",
+        "tags": [
+          "metadata"
+        ],
+        "responses": {
+          "200": {
+            "description": "YAML OpenAPI specification",
+            "content": {
+              "application/yaml": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "description": "This OpenAPI specification in YAML (no API key required)."
+      }
+    }
   },
-  "/openapi-chipradar.yaml": {
-   "get": {
-    "operationId": "getOpenAPISpec",
-    "summary": "OpenAPI spec (YAML)",
-    "tags": [
-     "metadata"
-    ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API key obtained from /api/keys."
+      }
+    },
     "responses": {
-     "200": {
-      "description": "YAML OpenAPI specification",
-      "content": {
-       "application/yaml": {
-        "schema": {
-         "type": "string",
-         "format": "binary"
+      "Unauthorized": {
+        "description": "Missing or invalid API key.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
         }
-       }
-      }
-     }
-    },
-    "description": "This OpenAPI specification in YAML (no API key required)."
-   }
-  }
- },
- "components": {
-  "securitySchemes": {
-   "bearerAuth": {
-    "type": "http",
-    "scheme": "bearer",
-    "description": "API key obtained from /api/keys."
-   }
-  },
-  "responses": {
-   "Unauthorized": {
-    "description": "Missing or invalid API key.",
-    "content": {
-     "application/json": {
-      "schema": {
-       "$ref": "#/components/schemas/Error"
-      }
-     }
-    }
-   },
-   "NotFound": {
-    "description": "Resource not found.",
-    "content": {
-     "application/json": {
-      "schema": {
-       "$ref": "#/components/schemas/Error"
-      }
-     }
-    }
-   },
-   "RateLimit": {
-    "description": "Rate limit exceeded.",
-    "headers": {
-     "X-RateLimit-Limit": {
-      "schema": {
-       "type": "integer"
-      }
-     },
-     "X-RateLimit-Remaining": {
-      "schema": {
-       "type": "integer"
-      }
-     },
-     "X-RateLimit-Window": {
-      "schema": {
-       "type": "string"
-      }
-     },
-     "X-RateLimit-Tier": {
-      "schema": {
-       "type": "string"
-      }
-     }
-    },
-    "content": {
-     "application/json": {
-      "schema": {
-       "$ref": "#/components/schemas/Error"
-      }
-     }
-    }
-   }
-  },
-  "schemas": {
-   "Error": {
-    "type": "object",
-    "properties": {
-     "detail": {
-      "type": "string"
-     }
-    }
-   },
-   "Board": {
-    "type": "object",
-    "properties": {
-     "asin": {
-      "type": "string"
-     },
-     "name": {
-      "type": "string"
-     },
-     "family": {
-      "type": "string",
-      "nullable": true
-     },
-     "category": {
-      "type": "string",
-      "nullable": true
-     },
-     "brand": {
-      "type": "string",
-      "nullable": true
-     },
-     "cpu_soc": {
-      "type": "string",
-      "nullable": true
-     },
-     "cpu_arch": {
-      "type": "string",
-      "nullable": true
-     },
-     "ram": {
-      "type": "string",
-      "nullable": true
-     },
-     "ram_type": {
-      "type": "string",
-      "nullable": true
-     },
-     "form_factor": {
-      "type": "string",
-      "nullable": true
-     },
-     "board_tier": {
-      "type": "string",
-      "nullable": true
-     },
-     "current_price": {
-      "type": "number",
-      "nullable": true
-     },
-     "availability": {
-      "type": "string",
-      "nullable": true
-     },
-     "last_price_update": {
-      "type": "string",
-      "nullable": true
-     },
-     "best_price": {
-      "type": "number",
-      "nullable": true
-     },
-     "best_vendor": {
-      "type": "string",
-      "nullable": true
-     },
-     "vendors": {
-      "type": "array",
-      "nullable": true,
-      "items": {
-       "$ref": "#/components/schemas/Vendor"
       },
-      "description": "Optional vendor comparison snapshot (returned by detail endpoints)."
-     }
-    }
-   },
-   "BoardListResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "count": {
-      "type": "integer"
-     },
-     "total": {
-      "type": "integer"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "boards": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/Board"
+      "NotFound": {
+        "description": "Resource not found.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "RateLimit": {
+        "description": "Rate limit exceeded.",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "schema": {
+              "type": "integer"
+            }
+          },
+          "X-RateLimit-Remaining": {
+            "schema": {
+              "type": "integer"
+            }
+          },
+          "X-RateLimit-Window": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "X-RateLimit-Tier": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
       }
-     }
-    }
-   },
-   "PricePoint": {
-    "type": "object",
-    "properties": {
-     "price": {
-      "type": "number",
-      "nullable": true
-     },
-     "timestamp": {
-      "type": "string",
-      "nullable": true
-     },
-     "vendor": {
-      "type": "string",
-      "nullable": true
-     },
-     "stock_status": {
-      "type": "string",
-      "nullable": true
-     }
-    }
-   },
-   "BoardHistoryResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "asin": {
-      "type": "string"
-     },
-     "name": {
-      "type": "string"
-     },
-     "days": {
-      "type": "integer"
-     },
-     "data_points": {
-      "type": "integer"
-     },
-     "history": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/PricePoint"
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string"
+          }
+        }
+      },
+      "Board": {
+        "type": "object",
+        "properties": {
+          "asin": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "family": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "brand": {
+            "type": "string",
+            "nullable": true
+          },
+          "cpu_soc": {
+            "type": "string",
+            "nullable": true
+          },
+          "cpu_arch": {
+            "type": "string",
+            "nullable": true
+          },
+          "ram": {
+            "type": "string",
+            "nullable": true
+          },
+          "ram_type": {
+            "type": "string",
+            "nullable": true
+          },
+          "form_factor": {
+            "type": "string",
+            "nullable": true
+          },
+          "board_tier": {
+            "type": "string",
+            "nullable": true
+          },
+          "current_price": {
+            "type": "number",
+            "nullable": true
+          },
+          "availability": {
+            "type": "string",
+            "nullable": true
+          },
+          "last_price_update": {
+            "type": "string",
+            "nullable": true
+          },
+          "best_price": {
+            "type": "number",
+            "nullable": true
+          },
+          "best_vendor": {
+            "type": "string",
+            "nullable": true
+          },
+          "vendors": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Vendor"
+            },
+            "description": "Optional vendor comparison snapshot (returned by detail endpoints)."
+          }
+        }
+      },
+      "BoardListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "boards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Board"
+            }
+          }
+        }
+      },
+      "PricePoint": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "nullable": true
+          },
+          "vendor": {
+            "type": "string",
+            "nullable": true
+          },
+          "stock_status": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "BoardHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "asin": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "days": {
+            "type": "integer"
+          },
+          "data_points": {
+            "type": "integer"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PricePoint"
+            }
+          }
+        }
+      },
+      "Deal": {
+        "type": "object",
+        "properties": {
+          "asin": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "family": {
+            "type": "string",
+            "nullable": true
+          },
+          "best_price": {
+            "type": "number"
+          },
+          "best_vendor": {
+            "type": "string",
+            "nullable": true
+          },
+          "msrp": {
+            "type": "number"
+          },
+          "savings_pct": {
+            "type": "number"
+          },
+          "savings_amount": {
+            "type": "number"
+          },
+          "deal_score": {
+            "type": "integer"
+          }
+        }
+      },
+      "DealListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "deals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Deal"
+            }
+          }
+        }
+      },
+      "RestockSignal": {
+        "type": "object",
+        "properties": {
+          "asin": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "alert_count": {
+            "type": "integer"
+          },
+          "last_alert": {
+            "type": "string",
+            "nullable": true
+          },
+          "current_availability": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "RestockListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "restock_alerts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestockSignal"
+            }
+          }
+        }
+      },
+      "LLMBenchmarkPlaceholder": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "beta": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "citation": {
+            "type": "string"
+          },
+          "benchmark_rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LLMBenchmarkRow"
+            }
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "asin": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "family": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "current_price": {
+            "type": "number",
+            "nullable": true
+          },
+          "best_price": {
+            "type": "number",
+            "nullable": true
+          },
+          "best_vendor": {
+            "type": "string",
+            "nullable": true
+          },
+          "availability": {
+            "type": "string",
+            "nullable": true
+          },
+          "last_updated": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ProductListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          }
+        }
+      },
+      "ProductDetailResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "product": {
+            "type": "object"
+          }
+        }
+      },
+      "Vendor": {
+        "type": "object",
+        "properties": {
+          "vendor": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "in_stock": {
+            "type": "boolean"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "affiliate_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "last_scraped": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "VendorListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "product_name": {
+            "type": "string"
+          },
+          "asin": {
+            "type": "string"
+          },
+          "vendors_count": {
+            "type": "integer"
+          },
+          "vendors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Vendor"
+            }
+          }
+        }
+      },
+      "PriceHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "product_name": {
+            "type": "string"
+          },
+          "asin": {
+            "type": "string"
+          },
+          "days": {
+            "type": "integer"
+          },
+          "data_points": {
+            "type": "integer"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PricePoint"
+            }
+          }
+        }
+      },
+      "BulkPriceResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "prices": {
+            "type": "object"
+          }
+        }
+      },
+      "PriceChange": {
+        "type": "object",
+        "properties": {
+          "asin": {
+            "type": "string"
+          },
+          "product_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "family": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number"
+          },
+          "vendor": {
+            "type": "string",
+            "nullable": true
+          },
+          "stock_status": {
+            "type": "string",
+            "nullable": true
+          },
+          "changed_at": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PriceChangesResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "hours": {
+            "type": "integer"
+          },
+          "changes_count": {
+            "type": "integer"
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceChange"
+            }
+          }
+        }
+      },
+      "VendorStats": {
+        "type": "object",
+        "properties": {
+          "vendor": {
+            "type": "string"
+          },
+          "product_count": {
+            "type": "integer"
+          },
+          "avg_price": {
+            "type": "number",
+            "nullable": true
+          },
+          "min_price": {
+            "type": "number",
+            "nullable": true
+          }
+        }
+      },
+      "VendorStatsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "vendors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VendorStats"
+            }
+          }
+        }
+      },
+      "FamilyListResponse": {
+        "type": "object"
+      },
+      "FamilyDetailResponse": {
+        "type": "object"
+      },
+      "KeyStatsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "requests_used_month": {
+            "type": "integer"
+          },
+          "requests_limit_month": {
+            "type": "integer"
+          },
+          "requests_remaining_month": {
+            "type": "integer"
+          },
+          "requests_limit_minute": {
+            "type": "integer"
+          },
+          "requests_remaining_minute": {
+            "type": "integer"
+          },
+          "reset_in_hours": {
+            "type": "number"
+          },
+          "rate_limit_window_hours": {
+            "type": "integer"
+          }
+        }
+      },
+      "LLMBenchmarkRow": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "ram_gb": {
+            "type": "integer",
+            "nullable": true
+          },
+          "model_name": {
+            "type": "string"
+          },
+          "quantization": {
+            "type": "string"
+          },
+          "tokens_per_sec": {
+            "type": "number"
+          },
+          "power_watts": {
+            "type": "number",
+            "nullable": true
+          },
+          "power_mode": {
+            "type": "string"
+          },
+          "runtime": {
+            "type": "string"
+          },
+          "usd_price": {
+            "type": "number",
+            "nullable": true
+          },
+          "perf_per_dollar": {
+            "type": "number",
+            "nullable": true
+          },
+          "perf_per_watt": {
+            "type": "number",
+            "nullable": true
+          },
+          "llamacpp_commit": {
+            "type": "string",
+            "nullable": true
+          },
+          "source_url": {
+            "type": "string"
+          },
+          "fetched_at": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpgradeRequired": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          },
+          "min_tier": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "current_tier": {
+            "type": "string"
+          },
+          "upgrade_url": {
+            "type": "string"
+          },
+          "current_cap": {
+            "type": "integer"
+          }
+        }
+      },
+      "InferenceBudget": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string"
+          },
+          "spent_usd": {
+            "type": "number"
+          },
+          "cap_usd": {
+            "type": "number"
+          },
+          "paused": {
+            "type": "boolean"
+          },
+          "updated_utc": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InferenceProviderHealth": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "uptime_24h_pct": {
+            "type": "number"
+          },
+          "p50_ttft_ms_24h": {
+            "type": "number",
+            "nullable": true
+          },
+          "p50_gen_tok_per_sec_24h": {
+            "type": "number",
+            "nullable": true
+          },
+          "err_429_pct_24h": {
+            "type": "number"
+          },
+          "err_5xx_pct_24h": {
+            "type": "number"
+          },
+          "effective_cost_per_1m_tokens": {
+            "type": "number",
+            "nullable": true
+          },
+          "last_probe_utc": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InferenceHealthResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string"
+          },
+          "window": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "budget": {
+            "$ref": "#/components/schemas/InferenceBudget"
+          },
+          "providers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InferenceProviderHealth"
+            }
+          }
+        }
+      },
+      "InferenceRouteMetrics": {
+        "type": "object",
+        "properties": {
+          "success_rate_pct": {
+            "type": "number",
+            "nullable": true
+          },
+          "p50_ttft_ms": {
+            "type": "number",
+            "nullable": true
+          },
+          "p50_gen_tok_per_sec": {
+            "type": "number",
+            "nullable": true
+          },
+          "err_429_pct": {
+            "type": "number",
+            "nullable": true
+          },
+          "err_5xx_pct": {
+            "type": "number",
+            "nullable": true
+          },
+          "integrity_rate_pct": {
+            "type": "number",
+            "nullable": true
+          },
+          "effective_cost_per_1m_tokens": {
+            "type": "number",
+            "nullable": true
+          },
+          "last_probe_utc": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InferenceRoute": {
+        "type": "object",
+        "properties": {
+          "provider_slug": {
+            "type": "string"
+          },
+          "provider_name": {
+            "type": "string"
+          },
+          "provider_model_id": {
+            "type": "string"
+          },
+          "input_price_per_1m_tokens": {
+            "type": "number",
+            "nullable": true
+          },
+          "output_price_per_1m_tokens": {
+            "type": "number",
+            "nullable": true
+          },
+          "source_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "price_verified": {
+            "type": "boolean"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/InferenceRouteMetrics"
+          }
+        }
+      },
+      "InferenceRoutesResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "model_slug": {
+            "type": "string"
+          },
+          "routes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InferenceRoute"
+            }
+          }
+        }
+      },
+      "InferenceRecommendResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "model_slug": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InferenceRoute"
+            }
+          }
+        }
+      },
+      "InferenceBreakevenBoard": {
+        "type": "object",
+        "properties": {
+          "asin": {
+            "type": "string"
+          },
+          "board_price": {
+            "type": "number"
+          },
+          "benchmark_model_name": {
+            "type": "string"
+          },
+          "tokens_per_sec": {
+            "type": "number"
+          },
+          "board_power_watts": {
+            "type": "number"
+          },
+          "local_energy_cost_per_day": {
+            "type": "number"
+          },
+          "cloud_cost_per_day": {
+            "type": "number"
+          },
+          "net_savings_per_day": {
+            "type": "number"
+          },
+          "payback_days": {
+            "type": "number"
+          }
+        }
+      },
+      "InferenceBreakevenExcluded": {
+        "type": "object",
+        "properties": {
+          "asin": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "net_savings_per_day": {
+            "type": "number",
+            "nullable": true
+          }
+        }
+      },
+      "InferenceBreakevenResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "daily_tokens": {
+            "type": "integer"
+          },
+          "model_slug": {
+            "type": "string"
+          },
+          "cloud_provider_used": {
+            "type": "string",
+            "nullable": true
+          },
+          "cloud_cost_per_day": {
+            "type": "number",
+            "nullable": true
+          },
+          "boards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InferenceBreakevenBoard"
+            }
+          },
+          "boards_excluded": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InferenceBreakevenExcluded"
+            }
+          }
+        }
       }
-     }
     }
-   },
-   "Deal": {
-    "type": "object",
-    "properties": {
-     "asin": {
-      "type": "string"
-     },
-     "name": {
-      "type": "string"
-     },
-     "family": {
-      "type": "string",
-      "nullable": true
-     },
-     "best_price": {
-      "type": "number"
-     },
-     "best_vendor": {
-      "type": "string",
-      "nullable": true
-     },
-     "msrp": {
-      "type": "number"
-     },
-     "savings_pct": {
-      "type": "number"
-     },
-     "savings_amount": {
-      "type": "number"
-     },
-     "deal_score": {
-      "type": "integer"
-     }
-    }
-   },
-   "DealListResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "count": {
-      "type": "integer"
-     },
-     "deals": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/Deal"
-      }
-     }
-    }
-   },
-   "RestockSignal": {
-    "type": "object",
-    "properties": {
-     "asin": {
-      "type": "string"
-     },
-     "name": {
-      "type": "string",
-      "nullable": true
-     },
-     "alert_count": {
-      "type": "integer"
-     },
-     "last_alert": {
-      "type": "string",
-      "nullable": true
-     },
-     "current_availability": {
-      "type": "string",
-      "nullable": true
-     }
-    }
-   },
-   "RestockListResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "count": {
-      "type": "integer"
-     },
-     "total": {
-      "type": "integer"
-     },
-     "restock_alerts": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/RestockSignal"
-      }
-     }
-    }
-   },
-   "LLMBenchmarkPlaceholder": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "beta": {
-      "type": "boolean"
-     },
-     "count": {
-      "type": "integer"
-     },
-     "citation": {
-      "type": "string"
-     },
-     "benchmark_rows": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/LLMBenchmarkRow"
-      }
-     }
-    }
-   },
-   "Product": {
-    "type": "object",
-    "properties": {
-     "asin": {
-      "type": "string"
-     },
-     "name": {
-      "type": "string"
-     },
-     "family": {
-      "type": "string",
-      "nullable": true
-     },
-     "category": {
-      "type": "string",
-      "nullable": true
-     },
-     "current_price": {
-      "type": "number",
-      "nullable": true
-     },
-     "best_price": {
-      "type": "number",
-      "nullable": true
-     },
-     "best_vendor": {
-      "type": "string",
-      "nullable": true
-     },
-     "availability": {
-      "type": "string",
-      "nullable": true
-     },
-     "last_updated": {
-      "type": "string",
-      "nullable": true
-     }
-    }
-   },
-   "ProductListResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "count": {
-      "type": "integer"
-     },
-     "total": {
-      "type": "integer"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "products": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/Product"
-      }
-     }
-    }
-   },
-   "ProductDetailResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "product": {
-      "type": "object"
-     }
-    }
-   },
-   "Vendor": {
-    "type": "object",
-    "properties": {
-     "vendor": {
-      "type": "string"
-     },
-     "price": {
-      "type": "number"
-     },
-     "currency": {
-      "type": "string"
-     },
-     "in_stock": {
-      "type": "boolean"
-     },
-     "url": {
-      "type": "string",
-      "nullable": true
-     },
-     "affiliate_url": {
-      "type": "string",
-      "nullable": true
-     },
-     "last_scraped": {
-      "type": "string",
-      "nullable": true
-     }
-    }
-   },
-   "VendorListResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "product_name": {
-      "type": "string"
-     },
-     "asin": {
-      "type": "string"
-     },
-     "vendors_count": {
-      "type": "integer"
-     },
-     "vendors": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/Vendor"
-      }
-     }
-    }
-   },
-   "PriceHistoryResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "product_name": {
-      "type": "string"
-     },
-     "asin": {
-      "type": "string"
-     },
-     "days": {
-      "type": "integer"
-     },
-     "data_points": {
-      "type": "integer"
-     },
-     "history": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/PricePoint"
-      }
-     }
-    }
-   },
-   "BulkPriceResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "count": {
-      "type": "integer"
-     },
-     "prices": {
-      "type": "object"
-     }
-    }
-   },
-   "PriceChange": {
-    "type": "object",
-    "properties": {
-     "asin": {
-      "type": "string"
-     },
-     "product_name": {
-      "type": "string",
-      "nullable": true
-     },
-     "family": {
-      "type": "string",
-      "nullable": true
-     },
-     "price": {
-      "type": "number"
-     },
-     "vendor": {
-      "type": "string",
-      "nullable": true
-     },
-     "stock_status": {
-      "type": "string",
-      "nullable": true
-     },
-     "changed_at": {
-      "type": "string",
-      "nullable": true
-     }
-    }
-   },
-   "PriceChangesResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "hours": {
-      "type": "integer"
-     },
-     "changes_count": {
-      "type": "integer"
-     },
-     "changes": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/PriceChange"
-      }
-     }
-    }
-   },
-   "VendorStats": {
-    "type": "object",
-    "properties": {
-     "vendor": {
-      "type": "string"
-     },
-     "product_count": {
-      "type": "integer"
-     },
-     "avg_price": {
-      "type": "number",
-      "nullable": true
-     },
-     "min_price": {
-      "type": "number",
-      "nullable": true
-     }
-    }
-   },
-   "VendorStatsResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "count": {
-      "type": "integer"
-     },
-     "vendors": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/VendorStats"
-      }
-     }
-    }
-   },
-   "FamilyListResponse": {
-    "type": "object"
-   },
-   "FamilyDetailResponse": {
-    "type": "object"
-   },
-   "KeyStatsResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "requests_used_month": {
-      "type": "integer"
-     },
-     "requests_limit_month": {
-      "type": "integer"
-     },
-     "requests_remaining_month": {
-      "type": "integer"
-     },
-     "requests_limit_minute": {
-      "type": "integer"
-     },
-     "requests_remaining_minute": {
-      "type": "integer"
-     },
-     "reset_in_hours": {
-      "type": "number"
-     },
-     "rate_limit_window_hours": {
-      "type": "integer"
-     }
-    }
-   },
-   "LLMBenchmarkRow": {
-    "type": "object",
-    "properties": {
-     "device_id": {
-      "type": "string"
-     },
-     "platform": {
-      "type": "string"
-     },
-     "ram_gb": {
-      "type": "integer",
-      "nullable": true
-     },
-     "model_name": {
-      "type": "string"
-     },
-     "quantization": {
-      "type": "string"
-     },
-     "tokens_per_sec": {
-      "type": "number"
-     },
-     "power_watts": {
-      "type": "number",
-      "nullable": true
-     },
-     "power_mode": {
-      "type": "string"
-     },
-     "runtime": {
-      "type": "string"
-     },
-     "usd_price": {
-      "type": "number",
-      "nullable": true
-     },
-     "perf_per_dollar": {
-      "type": "number",
-      "nullable": true
-     },
-     "perf_per_watt": {
-      "type": "number",
-      "nullable": true
-     },
-     "llamacpp_commit": {
-      "type": "string",
-      "nullable": true
-     },
-     "source_url": {
-      "type": "string"
-     },
-     "fetched_at": {
-      "type": "string"
-     },
-     "notes": {
-      "type": "string",
-      "nullable": true
-     }
-    }
-   },
-   "UpgradeRequired": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "error": {
-      "type": "string"
-     },
-     "min_tier": {
-      "type": "string"
-     },
-     "message": {
-      "type": "string"
-     },
-     "current_tier": {
-      "type": "string"
-     },
-     "upgrade_url": {
-      "type": "string"
-     },
-     "current_cap": {
-      "type": "integer"
-     }
-    }
-   },
-   "InferenceBudget": {
-    "type": "object",
-    "properties": {
-     "month": {
-      "type": "string"
-     },
-     "spent_usd": {
-      "type": "number"
-     },
-     "cap_usd": {
-      "type": "number"
-     },
-     "paused": {
-      "type": "boolean"
-     },
-     "updated_utc": {
-      "type": "string",
-      "nullable": true
-     }
-    }
-   },
-   "InferenceProviderHealth": {
-    "type": "object",
-    "properties": {
-     "slug": {
-      "type": "string"
-     },
-     "display_name": {
-      "type": "string"
-     },
-     "uptime_24h_pct": {
-      "type": "number"
-     },
-     "p50_ttft_ms_24h": {
-      "type": "number",
-      "nullable": true
-     },
-     "p50_gen_tok_per_sec_24h": {
-      "type": "number",
-      "nullable": true
-     },
-     "err_429_pct_24h": {
-      "type": "number"
-     },
-     "err_5xx_pct_24h": {
-      "type": "number"
-     },
-     "effective_cost_per_1m_tokens": {
-      "type": "number",
-      "nullable": true
-     },
-     "last_probe_utc": {
-      "type": "string",
-      "nullable": true
-     }
-    }
-   },
-   "InferenceHealthResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "generated_at": {
-      "type": "string"
-     },
-     "window": {
-      "type": "string"
-     },
-     "status": {
-      "type": "string"
-     },
-     "budget": {
-      "$ref": "#/components/schemas/InferenceBudget"
-     },
-     "providers": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/InferenceProviderHealth"
-      }
-     }
-    }
-   },
-   "InferenceRouteMetrics": {
-    "type": "object",
-    "properties": {
-     "success_rate_pct": {
-      "type": "number",
-      "nullable": true
-     },
-     "p50_ttft_ms": {
-      "type": "number",
-      "nullable": true
-     },
-     "p50_gen_tok_per_sec": {
-      "type": "number",
-      "nullable": true
-     },
-     "err_429_pct": {
-      "type": "number",
-      "nullable": true
-     },
-     "err_5xx_pct": {
-      "type": "number",
-      "nullable": true
-     },
-     "integrity_rate_pct": {
-      "type": "number",
-      "nullable": true
-     },
-     "effective_cost_per_1m_tokens": {
-      "type": "number",
-      "nullable": true
-     },
-     "last_probe_utc": {
-      "type": "string",
-      "nullable": true
-     }
-    }
-   },
-   "InferenceRoute": {
-    "type": "object",
-    "properties": {
-     "provider_slug": {
-      "type": "string"
-     },
-     "provider_name": {
-      "type": "string"
-     },
-     "provider_model_id": {
-      "type": "string"
-     },
-     "input_price_per_1m_tokens": {
-      "type": "number",
-      "nullable": true
-     },
-     "output_price_per_1m_tokens": {
-      "type": "number",
-      "nullable": true
-     },
-     "source_url": {
-      "type": "string",
-      "nullable": true
-     },
-     "price_verified": {
-      "type": "boolean"
-     },
-     "metrics": {
-      "$ref": "#/components/schemas/InferenceRouteMetrics"
-     }
-    }
-   },
-   "InferenceRoutesResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "model_slug": {
-      "type": "string"
-     },
-     "routes": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/InferenceRoute"
-      }
-     }
-    }
-   },
-   "InferenceRecommendResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "model_slug": {
-      "type": "string"
-     },
-     "priority": {
-      "type": "string"
-     },
-     "recommendations": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/InferenceRoute"
-      }
-     }
-    }
-   },
-   "InferenceBreakevenBoard": {
-    "type": "object",
-    "properties": {
-     "asin": {
-      "type": "string"
-     },
-     "board_price": {
-      "type": "number"
-     },
-     "benchmark_model_name": {
-      "type": "string"
-     },
-     "tokens_per_sec": {
-      "type": "number"
-     },
-     "board_power_watts": {
-      "type": "number"
-     },
-     "local_energy_cost_per_day": {
-      "type": "number"
-     },
-     "cloud_cost_per_day": {
-      "type": "number"
-     },
-     "net_savings_per_day": {
-      "type": "number"
-     },
-     "payback_days": {
-      "type": "number"
-     }
-    }
-   },
-   "InferenceBreakevenExcluded": {
-    "type": "object",
-    "properties": {
-     "asin": {
-      "type": "string"
-     },
-     "reason": {
-      "type": "string"
-     },
-     "net_savings_per_day": {
-      "type": "number",
-      "nullable": true
-     }
-    }
-   },
-   "InferenceBreakevenResponse": {
-    "type": "object",
-    "properties": {
-     "success": {
-      "type": "boolean"
-     },
-     "tier": {
-      "type": "string"
-     },
-     "daily_tokens": {
-      "type": "integer"
-     },
-     "model_slug": {
-      "type": "string"
-     },
-     "cloud_provider_used": {
-      "type": "string",
-      "nullable": true
-     },
-     "cloud_cost_per_day": {
-      "type": "number",
-      "nullable": true
-     },
-     "boards": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/InferenceBreakevenBoard"
-      }
-     },
-     "boards_excluded": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/InferenceBreakevenExcluded"
-      }
-     }
-    }
-   }
   }
- }
 }
