@@ -20,7 +20,7 @@ info:
     \ public demo mode without an API key.\n\n**Amazon compliance:** `current_price`\
     \ for Amazon-sourced products is\nintentionally stored as `0` by design; live\
     \ market prices come from\nindependent vendors tracked in `vendor_comparison`.\n"
-  version: 1.4.1
+  version: 1.4.2
   contact:
     name: ChipRadar API Support
     url: https://chipradar.io/developers
@@ -843,6 +843,32 @@ paths:
           price: $199/mo
           monthly_cap: 250000
           per_minute_cap: 600
+  /api/v1/inference/doors:
+    get:
+      summary: Provider door census per model
+      description: >-
+        How many PHYSICAL provider doors serve each model behind OpenRouter
+        (auto-routing is a router, not a door). Per-door list prices, probe-billed
+        $/1M output, quantization, context length and last-verified dates.
+        Sole-door models carry no price competition and no failover. Free tier:
+        distribution summary + one worked example; Indie+ ($12/mo): full census.
+      operationId: inferenceDoors
+      tags:
+        - inference
+      parameters:
+        - name: days
+          in: query
+          description: Measurement window in days (1-90, default 14)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 90
+            default: 14
+      responses:
+        "200":
+          description: Door census (summary + example on free tier, full models on Indie+)
+        "401":
+          description: Missing or invalid API key
   /api/v1/inference/history:
     get:
       operationId: inferenceHistory
