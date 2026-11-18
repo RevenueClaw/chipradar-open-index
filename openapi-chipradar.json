@@ -3,7 +3,7 @@
   "info": {
     "title": "ChipRadar B2B Hardware Pricing API",
     "description": "REST API for real-time multi-vendor single-board computer (SBC), mini-PC,\nand AI-accelerator pricing data. Endpoints are mounted under `/api/v1`\n(board-centric) and `/api/v2` (product-centric); `/api/v3` is proxied to\nthe same `/api/v2` handlers.\n\n**Authentication:** All B2B data endpoints require a Bearer API key:\n`Authorization: Bearer <api_key>`. Get a free key instantly at\nhttps://chipradar.io/api/keys.\n\n**Rate limiting \u2014 4-tier structure** (owner directive #3, 2026-11-11):\n\n| Tier (slug) | Price | Monthly cap | Per-minute cap | Key features |\n|---|---|---|---|---|\n| Sandbox (free) | $0/mo | 100 | 5 | current deals + basic specs |\n| Indie/Builder (indie) | $12/mo | 5,000 | 30 | LLM benchmarks, 90-day history, MCP access |\n| Pro/Growth (pro) | $49/mo | 50,000 | 120 | full history, restock webhooks, metered overages |\n| Enterprise/Supply Chain (enterprise) | $199/mo | 250,000+ | 600 | bulk exports, priority webhooks, custom SKU tracking |\n\nEvery B2B response includes rate-limit headers:\n`X-RateLimit-Limit`, `X-RateLimit-Remaining`,\n`X-RateLimit-Limit-Minute`, `X-RateLimit-Remaining-Minute`,\n`X-RateLimit-Window`, `X-RateLimit-Tier`.\n\n**MCP distribution:** The official MCP server lives at\nhttps://github.com/RevenueClaw/chipradar/tree/main/mcp-chipradar and runs\nin public demo mode without an API key.\n\n**Amazon compliance:** `current_price` for Amazon-sourced products is\nintentionally stored as `0` by design; live market prices come from\nindependent vendors tracked in `vendor_comparison`.\n",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "contact": {
       "name": "ChipRadar API Support",
       "url": "https://chipradar.io/developers"
@@ -1237,6 +1237,212 @@
             "price": "$199/mo",
             "monthly_cap": 250000,
             "per_minute_cap": 600
+          }
+        }
+      }
+    },
+    "/api/v1/used-market/summary": {
+      "get": {
+        "operationId": "usedMarketSummary",
+        "summary": "eBay secondary-market index (per-board used floors)",
+        "description": "Indie/Builder tier and above (v4.39): per-day boards-with-floor count,\ntotal valid listings, median spread vs new-retail, and per-board used\nfloor series from the eBay polling job. Free tier receives 403\nupgrade_required.\n",
+        "tags": [
+          "v1 \u2014 eBay used market"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Used-market index",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "days": 30,
+                  "boards": [
+                    {
+                      "asin": "B0CHXPVG2D",
+                      "used_floor_usd": 48.5,
+                      "used_landed_floor_usd": 55.2,
+                      "listing_count": 14
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Requires Indie/Builder tier or above.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpgradeRequired"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "allowed": false,
+            "reason": "Requires Indie/Builder tier or above ($12/mo)."
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600
+          }
+        }
+      }
+    },
+    "/api/v1/boards/{asin}/used-history": {
+      "get": {
+        "operationId": "boardUsedHistory",
+        "summary": "Per-board eBay used-market time series",
+        "description": "Indie/Builder tier and above (v4.39): one row per completed poll (2x/day)\nwith used floor, landed floor, condition mix, and listing counts for a\nsingle board. Free tier receives 403 upgrade_required.\n",
+        "tags": [
+          "v1 \u2014 eBay used market"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "asin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Board canonical ASIN/slug, e.g. `B0CHXPVG2D`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Used-market series",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Requires Indie/Builder tier or above.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpgradeRequired"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "allowed": false,
+            "reason": "Requires Indie/Builder tier or above ($12/mo)."
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600
+          }
+        }
+      }
+    },
+    "/api/v2/product-detail/{asin}": {
+      "get": {
+        "operationId": "productDetailV2",
+        "summary": "Full product detail (pricing, vendors, history)",
+        "description": "Aggregated detail used by the Check Price modal: current vendor spread,\nshort price history, and buy URLs. Available to every authenticated\ntier (v2 surface).\n",
+        "tags": [
+          "v2 \u2014 products & prices"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "asin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Unknown product"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
           }
         }
       }

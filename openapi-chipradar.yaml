@@ -20,7 +20,7 @@ info:
     \ public demo mode without an API key.\n\n**Amazon compliance:** `current_price`\
     \ for Amazon-sourced products is\nintentionally stored as `0` by design; live\
     \ market prices come from\nindependent vendors tracked in `vendor_comparison`.\n"
-  version: 1.4.0
+  version: 1.4.1
   contact:
     name: ChipRadar API Support
     url: https://chipradar.io/developers
@@ -926,6 +926,149 @@ paths:
           price: $199/mo
           monthly_cap: 250000
           per_minute_cap: 600
+  /api/v1/used-market/summary:
+    get:
+      operationId: usedMarketSummary
+      summary: eBay secondary-market index (per-board used floors)
+      description: |
+        Indie/Builder tier and above (v4.39): per-day boards-with-floor count,
+        total valid listings, median spread vs new-retail, and per-board used
+        floor series from the eBay polling job. Free tier receives 403
+        upgrade_required.
+      tags:
+      - v1 — eBay used market
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Used-market index
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                tier: indie
+                days: 30
+                boards:
+                - asin: B0CHXPVG2D
+                  used_floor_usd: 48.5
+                  used_landed_floor_usd: 55.2
+                  listing_count: 14
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Requires Indie/Builder tier or above.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+      x-tiers:
+        free:
+          allowed: false
+          reason: Requires Indie/Builder tier or above ($12/mo).
+        indie:
+          price: $12/mo
+          monthly_cap: 5000
+          per_minute_cap: 30
+        pro:
+          price: $49/mo
+          monthly_cap: 50000
+          per_minute_cap: 120
+        enterprise:
+          price: $199/mo
+          monthly_cap: 250000
+          per_minute_cap: 600
+  /api/v1/boards/{asin}/used-history:
+    get:
+      operationId: boardUsedHistory
+      summary: Per-board eBay used-market time series
+      description: |
+        Indie/Builder tier and above (v4.39): one row per completed poll (2x/day)
+        with used floor, landed floor, condition mix, and listing counts for a
+        single board. Free tier receives 403 upgrade_required.
+      tags:
+      - v1 — eBay used market
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: asin
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Board canonical ASIN/slug, e.g. `B0CHXPVG2D`.
+      responses:
+        '200':
+          description: Used-market series
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Requires Indie/Builder tier or above.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+      x-tiers:
+        free:
+          allowed: false
+          reason: Requires Indie/Builder tier or above ($12/mo).
+        indie:
+          price: $12/mo
+          monthly_cap: 5000
+          per_minute_cap: 30
+        pro:
+          price: $49/mo
+          monthly_cap: 50000
+          per_minute_cap: 120
+        enterprise:
+          price: $199/mo
+          monthly_cap: 250000
+          per_minute_cap: 600
+  /api/v2/product-detail/{asin}:
+    get:
+      operationId: productDetailV2
+      summary: Full product detail (pricing, vendors, history)
+      description: |
+        Aggregated detail used by the Check Price modal: current vendor spread,
+        short price history, and buy URLs. Available to every authenticated
+        tier (v2 surface).
+      tags:
+      - v2 — products & prices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: asin
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: days
+        in: query
+        schema:
+          type: integer
+          default: 30
+      responses:
+        '200':
+          description: Product detail
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Unknown product
+        '429':
+          $ref: '#/components/responses/RateLimit'
   /api/v1/swarm/ledger:
     get:
       operationId: swarmLedger
