@@ -3,7 +3,7 @@
   "info": {
     "title": "ChipRadar B2B Hardware Pricing API",
     "description": "REST API for real-time multi-vendor single-board computer (SBC), mini-PC,\nand AI-accelerator pricing data. Endpoints are mounted under `/api/v1`\n(board-centric) and `/api/v2` (product-centric); `/api/v3` is proxied to\nthe same `/api/v2` handlers.\n\n**Authentication:** All B2B data endpoints require a Bearer API key:\n`Authorization: Bearer <api_key>`. Get a free key instantly at\nhttps://chipradar.io/api/keys.\n\n**Rate limiting \u2014 4-tier structure** (owner directive #3, 2026-11-11):\n\n| Tier (slug) | Price | Monthly cap | Per-minute cap | Key features |\n|---|---|---|---|---|\n| Sandbox (free) | $0/mo | 100 | 5 | current deals + basic specs |\n| Indie/Builder (indie) | $12/mo | 5,000 | 30 | LLM benchmarks, 90-day history, MCP access |\n| Pro/Growth (pro) | $49/mo | 50,000 | 120 | full history, restock webhooks, metered overages |\n| Enterprise/Supply Chain (enterprise) | $199/mo | 250,000+ | 600 | bulk exports, priority webhooks, custom SKU tracking |\n\nEvery B2B response includes rate-limit headers:\n`X-RateLimit-Limit`, `X-RateLimit-Remaining`,\n`X-RateLimit-Limit-Minute`, `X-RateLimit-Remaining-Minute`,\n`X-RateLimit-Window`, `X-RateLimit-Tier`.\n\n**MCP distribution:** The official MCP server lives at\nhttps://github.com/RevenueClaw/chipradar/tree/main/mcp-chipradar and runs\nin public demo mode without an API key.\n\n**Amazon compliance:** `current_price` for Amazon-sourced products is\nintentionally stored as `0` by design; live market prices come from\nindependent vendors tracked in `vendor_comparison`.\n",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "contact": {
       "name": "ChipRadar API Support",
       "url": "https://chipradar.io/developers"
@@ -883,7 +883,7 @@
       "get": {
         "operationId": "inferenceModelRoutes",
         "summary": "Per-provider routes for one inference model",
-        "description": "Returns provider routes, prices, and 7-day probe metrics for a single model. Requires Indie/Builder tier or above.",
+        "description": "Returns provider routes, prices, and 7-day probe metrics for a single model, plus per-door metadata captured from OpenRouter's live endpoint listing (v4.75) \u2014 quantization, context_length, max_completion_tokens, supports_tools. Requires Indie/Builder tier or above.",
         "tags": [
           "v1 \u2014 inference telemetry"
         ],
@@ -1124,6 +1124,169 @@
             "price": "$199/mo",
             "monthly_cap": 250000,
             "per_minute_cap": 600
+          }
+        }
+      }
+    },
+    "/api/v1/inference/history": {
+      "get": {
+        "operationId": "inferenceHistory",
+        "summary": "Daily measured tokens/$ + throughput history",
+        "description": "Time-series of measured probe economics per provider-model-day: probe\nvolume, ok ratio, average generated tokens/sec, and the effective BILLED\ncost per 1M completion tokens (filter out low-volume seed days; days with\n>=10 costed probes carry the economics). Filter by provider and/or model.\nThis is what our probes actually paid \u2014 never vendor list price.\nRequires Indie/Builder tier or above.\n",
+        "tags": [
+          "v1 \u2014 inference telemetry"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 90,
+              "default": 14
+            },
+            "description": "Trailing window in days (1-90)."
+          },
+          {
+            "name": "provider",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Provider slug filter, e.g. `deepinfra`."
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Model slug filter, e.g. `glm-5.3-flash`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daily measured points",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "indie",
+                  "generated_at": "2026-11-18T00:40:00Z",
+                  "window_days": 14,
+                  "provider": "deepinfra",
+                  "model": "glm-5.3-flash",
+                  "count": 3,
+                  "points": [
+                    {
+                      "date": "2026-11-18",
+                      "provider_slug": "deepinfra",
+                      "model_slug": "glm-5.3-flash",
+                      "probes": 4,
+                      "ok_probes": 4,
+                      "avg_gen_tok_per_sec": 154.7,
+                      "effective_cost_per_1m_output_tokens": 0.31
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Requires Indie/Builder tier or above.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpgradeRequired"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        },
+        "x-tiers": {
+          "free": {
+            "allowed": false,
+            "reason": "Requires Indie/Builder tier or above ($12/mo)."
+          },
+          "indie": {
+            "price": "$12/mo",
+            "monthly_cap": 5000,
+            "per_minute_cap": 30
+          },
+          "pro": {
+            "price": "$49/mo",
+            "monthly_cap": 50000,
+            "per_minute_cap": 120
+          },
+          "enterprise": {
+            "price": "$199/mo",
+            "monthly_cap": 250000,
+            "per_minute_cap": 600
+          }
+        }
+      }
+    },
+    "/api/v1/swarm/ledger": {
+      "get": {
+        "operationId": "swarmLedger",
+        "summary": "ChipRadar's own OpenRouter fleet ledger",
+        "description": "The receipts: our production fleet's daily token usage priced at\nOpenRouter list rates, written by our own spend tracker and shipped here.\nAvailable to every tier \u2014 the dogfooding proof behind the tokens/$ story.\n",
+        "tags": [
+          "v1 \u2014 inference telemetry"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recent ledger rows (last 30 snapshots)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "success": true,
+                  "tier": "free",
+                  "count": 2,
+                  "rows": [
+                    {
+                      "ts": "2026-11-18T01:40:07+00:00",
+                      "models": {
+                        "qwen/qwen3.8-flash": {
+                          "in": 241847,
+                          "out": 103378,
+                          "list_cost_usd": 0.0849
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
           }
         }
       }
