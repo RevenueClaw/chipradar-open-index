@@ -20,7 +20,7 @@ info:
     \ public demo mode without an API key.\n\n**Amazon compliance:** `current_price`\
     \ for Amazon-sourced products is\nintentionally stored as `0` by design; live\
     \ market prices come from\nindependent vendors tracked in `vendor_comparison`.\n"
-  version: 1.4.2
+  version: 1.4.3
   contact:
     name: ChipRadar API Support
     url: https://chipradar.io/developers
@@ -843,6 +843,34 @@ paths:
           price: $199/mo
           monthly_cap: 250000
           per_minute_cap: 600
+  /api/v1/inference/spreads:
+    get:
+      summary: Decision-grade door spreads for multi-door models (Pro+)
+      description: >-
+        For every model with two or more measured physical provider doors:
+        cheapest door and its billed $/1M completion tokens, savings versus
+        OpenRouter auto-routing, same-day win streaks per door, and where
+        auto-routing actually lands (attribution). Served from billed probe
+        data; Pro tier ($49/mo) and Enterprise ($199/mo).
+      operationId: inferenceSpreads
+      tags:
+        - inference
+      parameters:
+        - name: days
+          in: query
+          description: Window in days (3-90, default 14)
+          schema:
+            type: integer
+            minimum: 3
+            maximum: 90
+            default: 14
+      responses:
+        "200":
+          description: Spread table with per-door measured economics (Pro+)
+        "401":
+          description: Missing or invalid API key
+        "403":
+          description: Requires Pro tier
   /api/v1/inference/doors:
     get:
       summary: Provider door census per model
